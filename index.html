@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BusGo – Travel Smart. Travel Safe.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0ede8;
+  --bg2: #e8e4dd;
+  --surface: rgba(255,255,255,0.7);
+  --surface2: rgba(255,255,255,0.9);
+  --border: rgba(0,0,0,0.08);
+  --text: #1a1814;
+  --text2: #6b6560;
+  --text3: #9b948e;
+  --accent: #e8521a;
+  --accent2: #f07c4a;
+  --green: #2d9e6b;
+  --red: #d64444;
+  --yellow: #f0b429;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --nav-h: 70px;
+}
+[data-theme="dark"] {
+  --bg: #0f0e0c;
+  --bg2: #1a1814;
+  --surface: rgba(30,28,24,0.85);
+  --surface2: rgba(40,38,32,0.95);
+  --border: rgba(255,255,255,0.08);
+  --text: #f0ede8;
+  --text2: #a09890;
+  --text3: #605850;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+}
+h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ===== NAV ===== */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5%;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem; font-weight: 800;
+  color: var(--accent); cursor: pointer; letter-spacing: -1px;
+}
+.nav-logo span { color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--text2); text-decoration: none;
+  transition: color 0.2s; position: relative; cursor: pointer;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 2px; background: var(--accent);
+  transform: scaleX(0); transition: transform 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.btn-nav {
+  padding: 9px 22px; border-radius: 50px;
+  background: var(--accent); color: #fff;
+  border: none; font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-nav:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,82,26,0.3); }
+.btn-dark {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--bg2); border: 1px solid var(--border);
+  cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.btn-dark:hover { transform: rotate(20deg); }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+
+/* User avatar dropdown */
+.user-avatar-wrap { position: relative; }
+.user-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 2px solid rgba(232,82,26,0.3);
+  transition: all 0.2s;
+}
+.user-avatar:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(232,82,26,0.3); }
+.user-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  min-width: 200px; overflow: hidden;
+  opacity: 0; pointer-events: none; transform: translateY(-8px);
+  transition: all 0.2s;
+}
+.user-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+.user-dropdown-header {
+  padding: 16px; background: linear-gradient(135deg, rgba(232,82,26,0.08), rgba(240,124,74,0.04));
+  border-bottom: 1px solid var(--border);
+}
+.user-dropdown-header .uname { font-weight: 700; font-size: 0.95rem; }
+.user-dropdown-header .uemail { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+.user-dd-item {
+  padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+  font-size: 0.88rem; color: var(--text2); cursor: pointer;
+  transition: all 0.15s;
+}
+.user-dd-item:hover { background: var(--bg2); color: var(--text); }
+.user-dd-item.danger { color: var(--red); }
+.user-dd-item.danger:hover { background: rgba(214,68,68,0.08); }
+
+/* ===== HERO ===== */
+#hero {
+  min-height: 100vh;
+  padding-top: var(--nav-h);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(135deg, #1a0a04 0%, #3d1505 30%, #6b2a0e 60%, #e8521a 100%);
+}
+.hero-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(232,82,26,0.4) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(240,124,74,0.2) 0%, transparent 50%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-bus {
+  position: absolute; right: -2%; bottom: 0;
+  width: 55%; max-width: 700px; opacity: 0.12;
+  font-size: 18vw; line-height: 1;
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  color: #fff; animation: busFloat 6s ease-in-out infinite;
+}
+@keyframes busFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.hero-content {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 860px;
+  padding: 60px 5% 80px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50px; padding: 6px 16px;
+  font-size: 0.8rem; color: rgba(255,255,255,0.8);
+  margin-bottom: 28px; animation: fadeUp 0.6s 0.2s both;
+}
+.hero-badge::before { content: '✦'; color: var(--accent2); }
+.hero-h1 {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 800; color: #fff; line-height: 1.05;
+  letter-spacing: -2px; margin-bottom: 16px;
+  animation: fadeUp 0.6s 0.4s both;
+}
+.hero-h1 em { color: var(--accent2); font-style: normal; }
+.hero-sub {
+  font-size: 1.1rem; color: rgba(255,255,255,0.65);
+  margin-bottom: 48px; max-width: 440px;
+  animation: fadeUp 0.6s 0.5s both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SEARCH CARD ===== */
+.search-card {
+  width: 100%; max-width: 840px;
+  background: var(--surface2); border-radius: 24px;
+  padding: 32px; box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(20px); animation: fadeUp 0.6s 0.7s both;
+}
+.search-row {
+  display: grid; grid-template-columns: 1fr auto 1fr 1fr 1fr;
+  gap: 12px; align-items: end;
+}
+.swap-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--accent); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.1rem; color: #fff;
+  transition: all 0.3s; flex-shrink: 0; margin-bottom: 2px;
+}
+.swap-btn:hover { transform: rotate(180deg); background: var(--accent2); }
+.field-wrap { position: relative; }
+.field-wrap label {
+  display: block; font-size: 0.75rem; font-weight: 600;
+  color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.field-wrap input, .field-wrap select {
+  width: 100%; padding: 12px 16px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  transition: all 0.2s; outline: none; appearance: none;
+}
+.field-wrap input:focus, .field-wrap select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232,82,26,0.12);
+}
+.field-wrap input::placeholder { color: var(--text3); }
+.dropdown-list {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
+  overflow: hidden; margin-top: 4px; display: none;
+}
+.dropdown-list.open { display: block; animation: fadeDown 0.15s both; }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.dropdown-item {
+  padding: 11px 16px; cursor: pointer; font-size: 0.9rem;
+  color: var(--text); display: flex; align-items: center; gap: 10px;
+  transition: background 0.15s;
+}
+.dropdown-item:hover { background: var(--bg2); }
+.dropdown-item .icon { color: var(--accent); font-size: 0.8rem; }
+.btn-search {
+  padding: 13px 32px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; border: none;
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  position: relative; overflow: hidden; white-space: nowrap;
+}
+.btn-search::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 0; height: 0; border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%); transition: width 0.5s, height 0.5s;
+}
+.btn-search:active::after { width: 200px; height: 200px; }
+.btn-search:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,82,26,0.4); }
+
+/* ===== SECTION HEADER ===== */
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+.section-header p { color: var(--text2); margin-top: 8px; }
+
+/* ===== POPULAR ROUTES ===== */
+#popular { padding: 80px 5%; background: var(--bg2); }
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.route-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  cursor: pointer; transition: all 0.25s; backdrop-filter: blur(10px);
+}
+.route-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+.route-cities { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.route-info { font-size: 0.8rem; color: var(--text2); }
+.route-price { font-size: 1.2rem; font-weight: 700; color: var(--accent); margin-top: 12px; }
+
+/* ===== RESULTS PAGE ===== */
+#results-page { display: none; padding-top: var(--nav-h); min-height: 100vh; }
+.results-header { background: linear-gradient(135deg, #1a0a04, #3d1505); padding: 32px 5%; color: #fff; }
+.results-header h2 { font-size: 1.6rem; font-weight: 700; }
+.results-meta { font-size: 0.85rem; color: rgba(255,255,255,0.65); margin-top: 4px; }
+.results-body {
+  display: grid; grid-template-columns: 280px 1fr;
+  gap: 24px; padding: 24px 5%; max-width: 1200px; margin: 0 auto;
+}
+.sidebar {
+  position: sticky; top: calc(var(--nav-h) + 16px);
+  height: fit-content; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px; backdrop-filter: blur(10px);
+}
+.sidebar h3 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.filter-group { margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+.filter-group:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.filter-group h4 { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 12px; }
+.filter-options { display: flex; flex-direction: column; gap: 8px; }
+.filter-checkbox { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.88rem; color: var(--text2); transition: color 0.2s; }
+.filter-checkbox:hover { color: var(--text); }
+.filter-checkbox input { display: none; }
+.checkmark { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+.filter-checkbox input:checked ~ .checkmark { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 0.6rem; }
+.filter-checkbox input:checked ~ .checkmark::after { content: '✓'; }
+.price-range { width: 100%; }
+.range-track { width: 100%; appearance: none; height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--accent) 0%, var(--accent) 60%, var(--border) 60%); cursor: pointer; outline: none; }
+.range-track::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 2px 8px rgba(232,82,26,0.3); transition: transform 0.2s; }
+.range-track::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.range-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text2); margin-top: 8px; }
+.sort-select { width: 100%; padding: 10px 12px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; cursor: pointer; outline: none; transition: all 0.2s; }
+.sort-select:focus { border-color: var(--accent); }
+.time-filter { display: flex; flex-wrap: wrap; gap: 8px; }
+.time-chip { padding: 6px 12px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--bg); font-size: 0.78rem; cursor: pointer; transition: all 0.2s; color: var(--text2); white-space: nowrap; }
+.time-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* BUS CARDS */
+.bus-list { display: flex; flex-direction: column; gap: 16px; }
+.bus-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s; backdrop-filter: blur(10px); animation: fadeUp 0.4s both; }
+.bus-card:hover { box-shadow: var(--shadow-lg); border-color: rgba(232,82,26,0.3); }
+.bus-card-header { padding: 20px 24px; display: grid; grid-template-columns: 1fr auto auto auto auto; align-items: center; gap: 16px; }
+.bus-name { font-size: 1.05rem; font-weight: 700; }
+.bus-type-badge { padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 600; background: rgba(232,82,26,0.1); color: var(--accent); border: 1px solid rgba(232,82,26,0.2); }
+.bus-rating { display: flex; align-items: center; gap: 4px; background: var(--green); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; }
+.time-block { text-align: center; }
+.time-block .time { font-size: 1.2rem; font-weight: 700; }
+.time-block .label { font-size: 0.72rem; color: var(--text2); }
+.duration-block { text-align: center; }
+.duration-block .dur { font-size: 0.85rem; font-weight: 600; color: var(--text2); }
+.duration-line { display: flex; align-items: center; gap: 6px; justify-content: center; }
+.dur-dash { flex: 1; height: 1px; background: var(--border); }
+.dur-icon { font-size: 0.7rem; color: var(--accent); }
+.price-block { text-align: right; }
+.price-block .from { font-size: 0.72rem; color: var(--text2); }
+.price-block .amount { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.btn-view-seats { padding: 10px 20px; border-radius: var(--radius-sm); background: var(--accent); color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.btn-view-seats:hover { background: var(--accent2); transform: translateY(-1px); }
+.bus-card-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-top: 1px solid var(--border); background: var(--bg2); font-size: 0.8rem; color: var(--text2); }
+.seat-count { display: flex; align-items: center; gap: 6px; }
+.seat-count .num { font-weight: 700; color: var(--green); }
+.amenities { display: flex; gap: 12px; }
+.amenity { display: flex; align-items: center; gap: 4px; }
+
+/* SEAT SELECTION */
+#seat-page { display: none; padding-top: var(--nav-h); min-height: 100vh; }
+.seat-page-body { max-width: 900px; margin: 0 auto; padding: 32px 5%; }
+.step-bar { display: flex; align-items: center; margin-bottom: 40px; overflow-x: auto; }
+.step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 70px; }
+.step-num { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; background: var(--surface); color: var(--text2); transition: all 0.3s; }
+.step.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step.done .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+.step-label { font-size: 0.72rem; color: var(--text2); text-align: center; }
+.step-line { flex: 1; height: 2px; background: var(--border); margin-bottom: 20px; }
+.step-line.done { background: var(--green); }
+.seat-layout-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+.seat-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; backdrop-filter: blur(10px); }
+.seat-panel h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+.seat-bus-top { background: var(--bg2); border-radius: 12px; padding: 20px 16px; position: relative; }
+.driver-area { display: flex; justify-content: flex-end; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 2px dashed var(--border); }
+.driver-seat { width: 44px; height: 44px; background: var(--text3); border-radius: 8px 8px 4px 4px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; opacity: 0.5; }
+.seat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.seat-aisle { visibility: hidden; }
+.seat { width: 40px; height: 40px; border-radius: 8px 8px 4px 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1.5px solid; position: relative; }
+.seat.available { background: rgba(45,158,107,0.1); border-color: rgba(45,158,107,0.3); color: var(--green); }
+.seat.available:hover { background: var(--green); color: #fff; transform: scale(1.1); box-shadow: 0 4px 12px rgba(45,158,107,0.3); }
+.seat.booked { background: rgba(0,0,0,0.05); border-color: var(--border); color: var(--text3); cursor: not-allowed; }
+[data-theme="dark"] .seat.booked { background: rgba(255,255,255,0.05); }
+.seat.selected { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,82,26,0.4); animation: seatPop 0.2s both; }
+@keyframes seatPop { 0% { transform: scale(0.9); } 60% { transform: scale(1.15); } 100% { transform: scale(1.08); } }
+.seat-legend { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text2); }
+.legend-dot { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; }
+.legend-dot.available { background: rgba(45,158,107,0.1); border-color: rgba(45,158,107,0.4); }
+.legend-dot.booked { background: rgba(0,0,0,0.05); border-color: var(--border); }
+.legend-dot.selected { background: var(--accent); border-color: var(--accent); }
+.booking-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: sticky; top: calc(var(--nav-h) + 16px); backdrop-filter: blur(10px); }
+.booking-summary h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+.summary-bus-info { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.88rem; }
+.summary-row .key { color: var(--text2); }
+.summary-row .val { font-weight: 600; }
+.selected-seats-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.seat-chip { padding: 4px 10px; border-radius: 50px; background: rgba(232,82,26,0.1); color: var(--accent); border: 1px solid rgba(232,82,26,0.2); font-size: 0.78rem; font-weight: 600; }
+.total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px; }
+.total-row .total-amt { color: var(--accent); font-size: 1.4rem; }
+.coupon-row { margin: 16px 0; }
+.coupon-input-wrap { display: flex; gap: 8px; }
+.coupon-input-wrap input { flex: 1; padding: 10px 12px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; outline: none; transition: all 0.2s; text-transform: uppercase; }
+.coupon-input-wrap input:focus { border-color: var(--accent); }
+.btn-apply { padding: 10px 16px; border-radius: var(--radius-sm); background: var(--bg2); border: 1.5px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+.btn-apply:hover { border-color: var(--accent); color: var(--accent); }
+.coupon-success { color: var(--green); font-size: 0.8rem; margin-top: 6px; display: none; }
+.btn-proceed { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 16px; }
+.btn-proceed:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,82,26,0.3); }
+.btn-proceed:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* PASSENGER DETAILS */
+#details-page { display: none; padding-top: var(--nav-h); min-height: 100vh; }
+.details-body { max-width: 700px; margin: 0 auto; padding: 32px 5%; }
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin-bottom: 20px; backdrop-filter: blur(10px); }
+.form-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 24px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-field { position: relative; }
+.form-field label { position: absolute; top: 14px; left: 14px; font-size: 0.88rem; color: var(--text2); transition: all 0.2s; pointer-events: none; background: transparent; }
+.form-field input, .form-field select { width: 100%; padding: 22px 14px 8px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: all 0.2s; }
+.form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+.form-field input:focus + label, .form-field input:not(:placeholder-shown) + label, .form-field select:focus + label, .form-field.has-val label { top: 6px; font-size: 0.72px; color: var(--accent); font-size: 0.7rem; font-weight: 600; }
+.form-field .err { font-size: 0.72rem; color: var(--red); margin-top: 4px; display: none; animation: errShake 0.3s both; }
+@keyframes errShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.form-field.error input { border-color: var(--red); }
+.form-field.error .err { display: block; }
+.payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pay-method { padding: 16px; border-radius: var(--radius-sm); border: 2px solid var(--border); text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+.pay-method:hover { border-color: var(--accent); }
+.pay-method.active { border-color: var(--accent); background: rgba(232,82,26,0.06); }
+.pay-method .icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+.pay-method .name { font-size: 0.8rem; font-weight: 600; color: var(--text2); }
+.btn-pay { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; position: relative; overflow: hidden; }
+.btn-pay:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,82,26,0.4); }
+
+/* LOADING */
+.payment-loading { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; }
+.payment-loading.show { display: flex; }
+.loader-ring { width: 64px; height: 64px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { color: #fff; margin-top: 16px; font-family: 'Syne', sans-serif; font-size: 1.1rem; }
+
+/* CONFIRMATION */
+#confirm-page { display: none; padding-top: var(--nav-h); min-height: 100vh; }
+.confirm-body { max-width: 700px; margin: 0 auto; padding: 32px 5%; }
+.confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 1500; overflow: hidden; }
+.confetti-piece { position: absolute; width: 10px; height: 10px; border-radius: 2px; animation: confettiFall 3s forwards; }
+@keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.confirm-hero { text-align: center; margin-bottom: 32px; padding: 40px 20px; background: linear-gradient(135deg, rgba(45,158,107,0.1), rgba(232,82,26,0.05)); border-radius: var(--radius); border: 1px solid rgba(45,158,107,0.2); }
+.confirm-icon { font-size: 4rem; margin-bottom: 12px; animation: bounceIn 0.5s both; }
+@keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.confirm-hero h2 { font-size: 2rem; font-weight: 800; color: var(--green); }
+.confirm-hero p { color: var(--text2); margin-top: 8px; }
+.ticket-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); }
+.ticket-header { background: linear-gradient(135deg, #1a0a04, #3d1505); padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; }
+.ticket-header .logo { color: var(--accent2); font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+.ticket-id { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+.ticket-id span { color: #fff; font-weight: 700; font-size: 0.9rem; }
+.ticket-body { padding: 28px; }
+.ticket-route { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.ticket-city { text-align: center; }
+.ticket-city .city-name { font-size: 1.5rem; font-weight: 800; }
+.ticket-city .city-time { font-size: 0.85rem; color: var(--text2); margin-top: 4px; }
+.ticket-arrow { flex: 1; text-align: center; color: var(--text3); font-size: 1.5rem; }
+.ticket-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+.ticket-field .key { font-size: 0.72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.ticket-field .val { font-size: 0.95rem; font-weight: 600; }
+.ticket-qr { display: flex; justify-content: center; padding: 20px; border-top: 1px dashed var(--border); }
+.qr-placeholder { width: 120px; height: 120px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text3); text-align: center; }
+.ticket-actions { display: flex; gap: 12px; margin-top: 20px; }
+.btn-download, .btn-print { flex: 1; padding: 12px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-download { background: var(--accent); color: #fff; border: none; }
+.btn-download:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-print { background: var(--bg); border: 1.5px solid var(--border); color: var(--text); }
+.btn-print:hover { border-color: var(--accent); color: var(--accent); }
+.btn-back { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 50px; background: var(--bg2); border: 1px solid var(--border); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; margin-bottom: 20px; }
+.btn-back:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* SKELETON */
+.skeleton { background: linear-gradient(90deg, var(--bg2) 25%, var(--border) 50%, var(--bg2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 3000; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 20px; box-shadow: var(--shadow-lg); font-size: 0.88rem; font-weight: 500; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; gap: 10px; max-width: 300px; }
+.toast.show { transform: translateX(0); }
+.toast-icon { font-size: 1.1rem; }
+
+/* MOBILE NAV */
+.mobile-menu { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 999; background: var(--surface2); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 20px 5%; flex-direction: column; gap: 16px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { color: var(--text2); text-decoration: none; font-size: 1rem; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+
+/* ===========================
+   LOGIN / SIGNUP MODAL
+   =========================== */
+.auth-overlay {
+  position: fixed; inset: 0; z-index: 4000;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  padding: 20px;
+}
+.auth-overlay.open { opacity: 1; pointer-events: all; }
+.auth-modal {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%; max-width: 440px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+  overflow: hidden;
+  transform: scale(0.94) translateY(16px);
+  transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
+}
+.auth-overlay.open .auth-modal { transform: scale(1) translateY(0); }
+.auth-modal-header {
+  background: linear-gradient(135deg, #1a0a04 0%, #3d1505 60%, #6b2a0e 100%);
+  padding: 32px 32px 28px;
+  position: relative; text-align: center;
+}
+.auth-modal-header .close-btn {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); border: none;
+  color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.auth-modal-header .close-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+.auth-logo { color: var(--accent2); font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+.auth-logo span { color: #fff; }
+.auth-tagline { color: rgba(255,255,255,0.6); font-size: 0.82rem; }
+
+/* Tabs */
+.auth-tabs {
+  display: flex; gap: 0;
+  background: var(--bg2); border-radius: 50px;
+  padding: 4px; margin: 20px 32px 0;
+}
+.auth-tab {
+  flex: 1; padding: 8px; border-radius: 50px;
+  font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 600;
+  border: none; background: transparent; color: var(--text2);
+  cursor: pointer; transition: all 0.25s;
+}
+.auth-tab.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(232,82,26,0.3); }
+
+.auth-body { padding: 28px 32px 32px; }
+
+/* Auth input */
+.auth-field { margin-bottom: 16px; position: relative; }
+.auth-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.auth-field input {
+  width: 100%; padding: 12px 16px 12px 42px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  outline: none; transition: all 0.2s;
+}
+.auth-field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,82,26,0.1); }
+.auth-field .fi { position: absolute; left: 14px; bottom: 13px; font-size: 1rem; pointer-events: none; }
+.auth-field .err { font-size: 0.72rem; color: var(--red); margin-top: 4px; display: none; }
+.auth-field.error input { border-color: var(--red); }
+.auth-field.error .err { display: block; }
+.auth-field .toggle-pw {
+  position: absolute; right: 12px; bottom: 11px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text3); font-size: 1rem; padding: 2px;
+  transition: color 0.2s;
+}
+.auth-field .toggle-pw:hover { color: var(--text); }
+
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.auth-divider span { flex: 1; height: 1px; background: var(--border); }
+.auth-divider p { font-size: 0.78rem; color: var(--text3); white-space: nowrap; }
+
+.btn-social {
+  width: 100%; padding: 11px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 10px; transition: all 0.2s; margin-bottom: 8px;
+}
+.btn-social:hover { border-color: var(--accent); background: rgba(232,82,26,0.04); }
+
+.btn-auth-submit {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff; border: none; border-radius: var(--radius-sm);
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; margin-top: 4px;
+}
+.btn-auth-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,82,26,0.35); }
+.btn-auth-submit:active { transform: translateY(0); }
+
+.auth-note { font-size: 0.75rem; color: var(--text3); text-align: center; margin-top: 12px; }
+.auth-note a { color: var(--accent); cursor: pointer; text-decoration: none; }
+.auth-note a:hover { text-decoration: underline; }
+
+.forgot-link { display: block; text-align: right; font-size: 0.78rem; color: var(--accent); cursor: pointer; margin-bottom: 16px; }
+.forgot-link:hover { text-decoration: underline; }
+
+/* ===========================
+   CONTENT MODAL (pages)
+   =========================== */
+.page-overlay {
+  position: fixed; inset: 0; z-index: 3500;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+  display: flex; align-items: stretch; justify-content: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.page-overlay.open { opacity: 1; pointer-events: all; }
+.page-drawer {
+  width: 100%; max-width: 760px;
+  background: var(--bg);
+  transform: translateX(100%);
+  transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  overflow-y: auto; display: flex; flex-direction: column;
+  box-shadow: -20px 0 60px rgba(0,0,0,0.2);
+}
+.page-overlay.open .page-drawer { transform: translateX(0); }
+.page-drawer-header {
+  background: linear-gradient(135deg, #1a0a04 0%, #3d1505 50%, #6b2a0e 100%);
+  padding: 32px 32px 28px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+  flex-shrink: 0;
+}
+.page-drawer-header h2 { color: #fff; font-size: 1.6rem; font-weight: 800; margin-top: 8px; }
+.page-drawer-header p { color: rgba(255,255,255,0.6); font-size: 0.85rem; margin-top: 4px; }
+.close-drawer {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none;
+  color: rgba(255,255,255,0.8); cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.close-drawer:hover { background: rgba(255,255,255,0.25); color: #fff; }
+.page-drawer-body { padding: 32px; flex: 1; }
+
+/* content pieces inside drawers */
+.content-section { margin-bottom: 36px; }
+.content-section h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+.content-section p { color: var(--text2); line-height: 1.7; font-size: 0.93rem; }
+.content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.content-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  backdrop-filter: blur(8px);
+}
+.content-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+.content-card p { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+.content-card .icon { font-size: 1.6rem; margin-bottom: 10px; }
+.stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+.stat-box { flex: 1; min-width: 110px; background: linear-gradient(135deg, rgba(232,82,26,0.1), rgba(240,124,74,0.05)); border: 1px solid rgba(232,82,26,0.15); border-radius: var(--radius); padding: 20px; text-align: center; }
+.stat-box .num { font-size: 1.8rem; font-weight: 800; color: var(--accent); font-family: 'Syne', sans-serif; }
+.stat-box .lbl { font-size: 0.78rem; color: var(--text2); margin-top: 4px; }
+
+/* Offers */
+.offer-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 16px;
+  transition: all 0.2s; backdrop-filter: blur(8px);
+}
+.offer-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.offer-badge {
+  min-width: 80px; height: 80px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+  color: #fff; text-align: center; line-height: 1.2; padding: 8px;
+}
+.offer-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.offer-info p { font-size: 0.82rem; color: var(--text2); margin-bottom: 8px; }
+.offer-code { display: inline-block; padding: 4px 12px; border-radius: 50px; background: rgba(232,82,26,0.1); color: var(--accent); border: 1px dashed var(--accent); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+.offer-code:hover { background: var(--accent); color: #fff; }
+
+/* Track bus */
+.track-input-row { display: flex; gap: 12px; margin-bottom: 24px; }
+.track-input-row input { flex: 1; padding: 12px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: all 0.2s; }
+.track-input-row input:focus { border-color: var(--accent); }
+.track-map-placeholder { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--text3); margin-bottom: 20px; }
+.track-timeline { display: flex; flex-direction: column; gap: 0; }
+.track-stop { display: flex; align-items: flex-start; gap: 16px; padding-bottom: 24px; position: relative; }
+.track-stop:last-child { padding-bottom: 0; }
+.track-dot-wrap { display: flex; flex-direction: column; align-items: center; }
+.track-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); flex-shrink: 0; }
+.track-dot.done { background: var(--accent); }
+.track-dot.current { background: var(--accent); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(232,82,26,0.4); } 50% { box-shadow: 0 0 0 8px rgba(232,82,26,0); } }
+.track-line { width: 2px; flex: 1; background: var(--border); margin: 2px 0; min-height: 24px; }
+.track-line.done { background: var(--accent); }
+.track-stop-info h4 { font-size: 0.9rem; font-weight: 700; }
+.track-stop-info p { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+.track-stop-info .eta { font-size: 0.75rem; color: var(--green); font-weight: 600; margin-top: 2px; }
+
+/* My Bookings */
+.booking-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; backdrop-filter: blur(8px); }
+.booking-card-top { background: linear-gradient(135deg, #1a0a04, #3d1505); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+.booking-card-top .bid { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+.booking-card-top .bid span { color: #fff; font-weight: 700; }
+.booking-status { padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; }
+.booking-status.confirmed { background: rgba(45,158,107,0.2); color: #4eca90; border: 1px solid rgba(45,158,107,0.3); }
+.booking-status.upcoming { background: rgba(240,180,41,0.2); color: var(--yellow); border: 1px solid rgba(240,180,41,0.3); }
+.booking-card-body { padding: 20px; }
+.booking-route { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.booking-meta { font-size: 0.82rem; color: var(--text2); display: flex; gap: 16px; flex-wrap: wrap; }
+.booking-meta span { display: flex; align-items: center; gap: 4px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+.empty-state .icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.4; }
+.empty-state h3 { font-size: 1.2rem; color: var(--text); margin-bottom: 8px; }
+.empty-state p { font-size: 0.88rem; }
+
+/* Help center */
+.faq-item { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 8px; }
+.faq-q { padding: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--surface); transition: background 0.2s; font-size: 0.92rem; }
+.faq-q:hover { background: var(--bg2); }
+.faq-q .arr { transition: transform 0.25s; font-size: 0.8rem; color: var(--text3); }
+.faq-q.open .arr { transform: rotate(180deg); }
+.faq-a { padding: 0 16px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; font-size: 0.88rem; color: var(--text2); line-height: 1.6; background: var(--bg); }
+.faq-a.open { padding: 16px; max-height: 300px; }
+
+/* Contact form */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.c-field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.c-field input, .c-field select, .c-field textarea { width: 100%; padding: 11px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: all 0.2s; resize: vertical; }
+.c-field input:focus, .c-field select:focus, .c-field textarea:focus { border-color: var(--accent); }
+.contact-channels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.channel-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; text-align: center; }
+.channel-card .ic { font-size: 2rem; margin-bottom: 8px; }
+.channel-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+.channel-card p { font-size: 0.75rem; color: var(--text2); }
+
+/* Blog */
+.blog-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; display: flex; gap: 0; backdrop-filter: blur(8px); cursor: pointer; transition: all 0.2s; }
+.blog-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.blog-img { width: 120px; min-height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; flex-shrink: 0; }
+.blog-content { padding: 16px; }
+.blog-tag { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.blog-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.blog-content p { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+.blog-meta { font-size: 0.72rem; color: var(--text3); margin-top: 8px; }
+
+/* Careers */
+.job-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); }
+.job-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.job-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.job-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.job-tag { padding: 3px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 600; background: rgba(232,82,26,0.08); color: var(--accent); border: 1px solid rgba(232,82,26,0.15); }
+.job-tag.green { background: rgba(45,158,107,0.08); color: var(--green); border-color: rgba(45,158,107,0.15); }
+
+/* Legal pages */
+.legal-section { margin-bottom: 28px; }
+.legal-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--accent); }
+.legal-section p, .legal-section li { font-size: 0.88rem; color: var(--text2); line-height: 1.7; }
+.legal-section ul { padding-left: 20px; }
+.legal-section ul li { margin-bottom: 6px; }
+
+/* Press */
+.press-logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.press-logo { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px; text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--text2); }
+.press-article { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.press-article h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; line-height: 1.4; }
+.press-article p { font-size: 0.78rem; color: var(--text2); }
+.press-source { font-size: 0.72rem; color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+/* ===== FOOTER ===== */
+.site-footer {
+  background: linear-gradient(135deg, #1a0a04 0%, #3d1505 40%, #6b2a0e 75%, #e8521a 100%);
+  color: rgba(255,255,255,0.85); padding: 60px 5% 20px;
+}
+.footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+.footer-col h4 { font-size: 1rem; margin-bottom: 16px; color: #ffffff; font-weight: 600; }
+.footer-col ul { list-style: none; padding: 0; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul li a { text-decoration: none; color: rgba(255,255,255,0.65); font-size: 0.9rem; transition: 0.3s; cursor: pointer; }
+.footer-col ul li a:hover { color: #ffffff; padding-left: 4px; }
+.footer-logo { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #ff7a3d; margin-bottom: 16px; }
+.footer-logo span { color: #ffffff; }
+.brand-col p { font-size: 0.9rem; color: rgba(255,255,255,0.65); max-width: 260px; line-height: 1.6; }
+.footer-socials { display: flex; gap: 10px; margin-top: 20px; }
+.social-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; text-decoration: none; }
+.social-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+.footer-links { display: flex; gap: 0; flex-wrap: wrap; }
+.footer-links a { margin-left: 20px; text-decoration: none; color: rgba(255,255,255,0.7); transition: 0.3s; cursor: pointer; }
+.footer-links a:hover { color: #ffffff; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .search-row { grid-template-columns: 1fr 1fr; }
+  .search-row .swap-btn { display: none; }
+  .results-body { grid-template-columns: 1fr; }
+  .sidebar { position: relative; top: 0; }
+  .seat-layout-wrap { grid-template-columns: 1fr; }
+  .booking-summary { position: relative; top: 0; }
+  .bus-card-header { grid-template-columns: 1fr; gap: 10px; }
+  .nav-links, .btn-nav { display: none; }
+  .hamburger { display: flex; }
+  .form-grid { grid-template-columns: 1fr; }
+  .ticket-grid { grid-template-columns: 1fr 1fr; }
+  .payment-methods { grid-template-columns: 1fr 1fr 1fr; }
+  .content-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .contact-channels { grid-template-columns: 1fr; }
+  .press-logo-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-drawer { max-width: 100%; }
+  .footer-links a { margin-left: 0; margin-right: 15px; }
+  .footer-bottom { flex-direction: column; }
+}
+@media (max-width: 600px) {
+  .hero-h1 { font-size: 2.4rem; }
+  .search-row { grid-template-columns: 1fr; }
+  .btn-search { width: 100%; }
+  .ticket-grid { grid-template-columns: 1fr 1fr; }
+  .seat-grid { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  .seat { width: 34px; height: 34px; font-size: 0.62rem; }
+  .auth-body { padding: 20px; }
+  .auth-modal-header { padding: 24px 20px 20px; }
+  .auth-tabs { margin: 16px 20px 0; }
+  .page-drawer-body { padding: 20px; }
+  .stat-row { gap: 8px; }
+  .blog-img { width: 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <div class="nav-logo" onclick="goHome()">🚌 <span>Bus</span>Go</div>
+  <ul class="nav-links">
+    <li><a onclick="goHome()">Home</a></li>
+    <li><a onclick="openPage('bookings')">My Bookings</a></li>
+    <li><a onclick="openPage('offers')">Offers</a></li>
+    <li><a onclick="openPage('help')">Support</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-dark" onclick="toggleDark()" id="darkBtn">🌙</button>
+    <!-- Login btn (shown when logged out) -->
+    <button class="btn-nav" id="loginBtn" onclick="openAuth('login')">Login</button>
+    <!-- User avatar (shown when logged in) -->
+    <div class="user-avatar-wrap" id="userAvatarWrap" style="display:none">
+      <div class="user-avatar" id="userAvatar" onclick="toggleUserDD()">A</div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+          <div class="uname" id="ddName">User</div>
+          <div class="uemail" id="ddEmail">user@email.com</div>
+        </div>
+        <div class="user-dd-item" onclick="openPage('bookings');toggleUserDD()">🎫 My Bookings</div>
+        <div class="user-dd-item" onclick="openPage('track');toggleUserDD()">📍 Track Bus</div>
+        <div class="user-dd-item" onclick="openPage('offers');toggleUserDD()">🏷️ Offers &amp; Deals</div>
+        <div class="user-dd-item" onclick="openPage('help');toggleUserDD()">❓ Help Center</div>
+        <div class="user-dd-item danger" onclick="logout()">🚪 Logout</div>
+      </div>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="goHome();toggleMenu()">🏠 Home</a>
+  <a onclick="openPage('bookings');toggleMenu()">🎫 My Bookings</a>
+  <a onclick="openPage('offers');toggleMenu()">🏷️ Offers</a>
+  <a onclick="openPage('track');toggleMenu()">📍 Track Bus</a>
+  <a onclick="openPage('help');toggleMenu()">❓ Support</a>
+  <button class="btn-nav" id="mobileLoginBtn" style="width:fit-content" onclick="openAuth('login');toggleMenu()">Login / Signup</button>
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div class="payment-loading" id="payLoader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Processing payment…</div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home-page">
+  <section id="hero">
+    <div class="hero-bg"><div class="hero-grid"></div></div>
+    <div class="hero-bus">🚌</div>
+    <div class="hero-content">
+      <div class="hero-badge">India's #1 Bus Booking Platform</div>
+      <h1 class="hero-h1">Travel <em>Smart.</em><br>Travel Safe.</h1>
+      <p class="hero-sub">Book from 2000+ routes across India. Lowest fares, live seat tracking.</p>
+      <div class="search-card">
+        <div class="search-row">
+          <div class="field-wrap">
+            <label>From</label>
+            <input type="text" id="fromCity" placeholder="e.g. Mumbai" autocomplete="off" oninput="showSuggestions('from',this.value)" onfocus="showSuggestions('from',this.value)">
+            <div class="dropdown-list" id="fromDropdown"></div>
+          </div>
+          <button class="swap-btn" onclick="swapCities()">⇄</button>
+          <div class="field-wrap">
+            <label>To</label>
+            <input type="text" id="toCity" placeholder="e.g. Pune" autocomplete="off" oninput="showSuggestions('to',this.value)" onfocus="showSuggestions('to',this.value)">
+            <div class="dropdown-list" id="toDropdown"></div>
+          </div>
+          <div class="field-wrap">
+            <label>Date</label>
+            <input type="date" id="travelDate">
+          </div>
+          <div class="field-wrap">
+            <label>Bus Type</label>
+            <select id="busTypeFilter">
+              <option value="">All Types</option>
+              <option>AC</option>
+              <option>Non-AC</option>
+              <option>Sleeper</option>
+              <option>Volvo</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-search" onclick="searchBuses()">🔍 Search Buses</button>
+          <div style="font-size:0.8rem;color:var(--text2)">Popular:
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Mumbai','Pune')">Mumbai→Pune</span> ·
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Delhi','Jaipur')">Delhi→Jaipur</span> ·
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Bangalore','Chennai')">Bangalore→Chennai</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="popular">
+    <div class="section-header">
+      <h2>Popular Routes</h2>
+      <p>Most booked routes across India</p>
+    </div>
+    <div class="routes-grid" id="popularRoutes"></div>
+  </section>
+</div>
+
+<!-- ===== RESULTS PAGE ===== -->
+<div id="results-page">
+  <div class="results-header">
+    <button class="btn-back" onclick="goHome()">← Back</button>
+    <h2 id="resultsTitle">Buses Found</h2>
+    <div class="results-meta" id="resultsMeta"></div>
+  </div>
+  <div class="results-body">
+    <aside class="sidebar">
+      <h3>🎛 Filters</h3>
+      <div class="filter-group">
+        <h4>Sort By</h4>
+        <select class="sort-select" id="sortBy" onchange="applyFilters()">
+          <option value="price">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="departure">Departure Time</option>
+          <option value="duration">Duration</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>Price Range</h4>
+        <input type="range" class="range-track" id="priceRange" min="100" max="3000" value="3000" oninput="updatePrice(this.value)">
+        <div class="range-labels"><span>₹100</span><span id="priceLabel">₹3000</span></div>
+      </div>
+      <div class="filter-group">
+        <h4>Departure Time</h4>
+        <div class="time-filter">
+          <div class="time-chip active" data-time="all" onclick="filterTime(this,'all')">All</div>
+          <div class="time-chip" data-time="morning" onclick="filterTime(this,'morning')">🌅 Morning</div>
+          <div class="time-chip" data-time="afternoon" onclick="filterTime(this,'afternoon')">☀️ Afternoon</div>
+          <div class="time-chip" data-time="evening" onclick="filterTime(this,'evening')">🌆 Evening</div>
+          <div class="time-chip" data-time="night" onclick="filterTime(this,'night')">🌙 Night</div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Bus Type</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox"><input type="checkbox" value="AC" onchange="applyFilters()"><span class="checkmark"></span>AC</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Non-AC" onchange="applyFilters()"><span class="checkmark"></span>Non-AC</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Sleeper" onchange="applyFilters()"><span class="checkmark"></span>Sleeper</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Volvo" onchange="applyFilters()"><span class="checkmark"></span>Volvo</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Minimum Rating</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox"><input type="radio" name="rating" value="0" checked onchange="applyFilters()"><span class="checkmark"></span>All</label>
+          <label class="filter-checkbox"><input type="radio" name="rating" value="4" onchange="applyFilters()"><span class="checkmark"></span>⭐ 4+ Stars</label>
+          <label class="filter-checkbox"><input type="radio" name="rating" value="4.5" onchange="applyFilters()"><span class="checkmark"></span>⭐ 4.5+ Stars</label>
+        </div>
+      </div>
+    </aside>
+    <div>
+      <div class="bus-list" id="busList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SEAT PAGE ===== -->
+<div id="seat-page">
+  <div class="seat-page-body">
+    <button class="btn-back" onclick="goResults()">← Back to Buses</button>
+    <div class="step-bar" id="stepBar"></div>
+    <div class="seat-layout-wrap">
+      <div class="seat-panel">
+        <h3 id="seatPanelTitle">Select Your Seats</h3>
+        <div class="seat-bus-top">
+          <div class="driver-area"><div class="driver-seat">🚗</div></div>
+          <div class="seat-grid" id="seatGrid"></div>
+        </div>
+        <div class="seat-legend">
+          <div class="legend-item"><div class="legend-dot available"></div>Available</div>
+          <div class="legend-item"><div class="legend-dot booked"></div>Booked</div>
+          <div class="legend-item"><div class="legend-dot selected"></div>Selected</div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text2);margin-top:12px">Max 6 seats per booking. Click to select.</p>
+      </div>
+      <div>
+        <div class="booking-summary">
+          <h3>Booking Summary</h3>
+          <div class="summary-bus-info">
+            <div class="summary-row"><span class="key">Bus</span><span class="val" id="sumBusName">-</span></div>
+            <div class="summary-row"><span class="key">Route</span><span class="val" id="sumRoute">-</span></div>
+            <div class="summary-row"><span class="key">Date</span><span class="val" id="sumDate">-</span></div>
+            <div class="summary-row"><span class="key">Departure</span><span class="val" id="sumDep">-</span></div>
+          </div>
+          <div class="summary-row"><span class="key">Selected Seats</span></div>
+          <div class="selected-seats-chips" id="selectedChips"><span style="color:var(--text3);font-size:0.82rem">No seats selected</span></div>
+          <div class="coupon-row">
+            <div class="coupon-input-wrap">
+              <input type="text" id="couponInput" placeholder="COUPON CODE">
+              <button class="btn-apply" onclick="applyCoupon()">Apply</button>
+            </div>
+            <div class="coupon-success" id="couponSuccess">🎉 Coupon applied! ₹<span id="discountAmt">0</span> off</div>
+          </div>
+          <div class="summary-row"><span class="key">Price per seat</span><span class="val" id="sumPrice">-</span></div>
+          <div class="summary-row"><span class="key">Seats</span><span class="val" id="sumSeats">0</span></div>
+          <div class="summary-row" id="discountRow" style="display:none"><span class="key" style="color:var(--green)">Discount</span><span class="val" style="color:var(--green)" id="discountDisplay">-₹0</span></div>
+          <div class="total-row"><span>Total</span><span class="total-amt" id="totalAmt">₹0</span></div>
+          <button class="btn-proceed" id="proceedBtn" disabled onclick="goDetails()">Proceed to Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETAILS PAGE ===== -->
+<div id="details-page">
+  <div class="details-body">
+    <button class="btn-back" onclick="goSeat()">← Back to Seats</button>
+    <div class="step-bar" id="stepBar2"></div>
+    <div class="form-card">
+      <h3>👤 Passenger Details</h3>
+      <div class="form-grid">
+        <div class="form-field" id="ff-name">
+          <input type="text" id="pName" placeholder=" ">
+          <label>Full Name *</label>
+          <div class="err">Please enter your full name</div>
+        </div>
+        <div class="form-field" id="ff-phone">
+          <input type="tel" id="pPhone" placeholder=" ">
+          <label>Phone Number *</label>
+          <div class="err">Enter valid 10-digit number</div>
+        </div>
+        <div class="form-field" id="ff-email">
+          <input type="email" id="pEmail" placeholder=" ">
+          <label>Email Address *</label>
+          <div class="err">Enter valid email address</div>
+        </div>
+        <div class="form-field" id="ff-age">
+          <input type="number" id="pAge" placeholder=" " min="5" max="100">
+          <label>Age *</label>
+          <div class="err">Age must be between 5 and 100</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <h3>💳 Payment Method</h3>
+      <div class="payment-methods">
+        <div class="pay-method active" onclick="selectPay(this,'card')"><span class="icon">💳</span><span class="name">Card</span></div>
+        <div class="pay-method" onclick="selectPay(this,'upi')"><span class="icon">📱</span><span class="name">UPI</span></div>
+        <div class="pay-method" onclick="selectPay(this,'wallet')"><span class="icon">👛</span><span class="name">Wallet</span></div>
+      </div>
+      <div id="cardFields" style="margin-top:20px">
+        <div class="form-grid">
+          <div class="form-field" id="ff-card" style="grid-column:1/-1">
+            <input type="text" id="pCard" placeholder=" " maxlength="19">
+            <label>Card Number</label>
+          </div>
+          <div class="form-field">
+            <input type="text" id="pExpiry" placeholder=" " maxlength="5">
+            <label>Expiry (MM/YY)</label>
+          </div>
+          <div class="form-field">
+            <input type="password" id="pCVV" placeholder=" " maxlength="3">
+            <label>CVV</label>
+          </div>
+        </div>
+      </div>
+      <div id="upiField" style="margin-top:20px;display:none">
+        <div class="form-field">
+          <input type="text" id="pUPI" placeholder=" ">
+          <label>UPI ID (e.g. name@upi)</label>
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <div class="summary-row"><span class="key">Total Amount</span><span class="val" id="detailTotal" style="color:var(--accent);font-size:1.2rem">-</span></div>
+        <button class="btn-pay" onclick="processPayment()">Pay Now 🔒</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM PAGE ===== -->
+<div id="confirm-page">
+  <div class="confetti-wrap" id="confettiWrap"></div>
+  <div class="confirm-body">
+    <div class="confirm-hero">
+      <div class="confirm-icon">🎉</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your ticket has been booked successfully. Safe travels!</p>
+    </div>
+    <div class="ticket-card">
+      <div class="ticket-header">
+        <div class="logo">🚌 BusGo</div>
+        <div class="ticket-id">Booking ID: <span id="ticketId">-</span></div>
+      </div>
+      <div class="ticket-body">
+        <div class="ticket-route">
+          <div class="ticket-city">
+            <div class="city-name" id="tcFrom">-</div>
+            <div class="city-time" id="tcDep">-</div>
+          </div>
+          <div class="ticket-arrow">→</div>
+          <div class="ticket-city">
+            <div class="city-name" id="tcTo">-</div>
+            <div class="city-time" id="tcArr">-</div>
+          </div>
+        </div>
+        <div class="ticket-grid">
+          <div class="ticket-field"><div class="key">Passenger</div><div class="val" id="tcName">-</div></div>
+          <div class="ticket-field"><div class="key">Bus</div><div class="val" id="tcBus">-</div></div>
+          <div class="ticket-field"><div class="key">Seats</div><div class="val" id="tcSeats">-</div></div>
+          <div class="ticket-field"><div class="key">Date</div><div class="val" id="tcDate">-</div></div>
+          <div class="ticket-field"><div class="key">Phone</div><div class="val" id="tcPhone">-</div></div>
+          <div class="ticket-field"><div class="key">Amount Paid</div><div class="val" id="tcAmount" style="color:var(--accent)">-</div></div>
+        </div>
+        <div class="ticket-qr">
+          <div class="qr-placeholder" id="qrCode">🔲 QR Code</div>
+        </div>
+      </div>
+    </div>
+    <div class="ticket-actions">
+      <button class="btn-download" onclick="showToast('📥 Ticket downloaded!')">📥 Download PDF</button>
+      <button class="btn-print" onclick="window.print()">🖨 Print Ticket</button>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <button class="btn-search" onclick="goHome()">Book Another Ticket</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer" id="site-footer">
+  <div class="footer-container">
+    <div class="footer-col brand-col">
+      <div class="footer-logo">🚌 <span>Bus</span>Go</div>
+      <p>India's most trusted bus booking platform. Travel comfortably, book confidently.</p>
+      <div class="footer-socials">
+        <a class="social-btn" title="Twitter">𝕏</a>
+        <a class="social-btn" title="Facebook">f</a>
+        <a class="social-btn" title="Instagram">📸</a>
+        <a class="social-btn" title="LinkedIn">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a onclick="goHome()">🔍 Search Buses</a></li>
+        <li><a onclick="openPage('bookings')">🎫 My Bookings</a></li>
+        <li><a onclick="openPage('offers')">🏷️ Offers</a></li>
+        <li><a onclick="openPage('track')">📍 Track Bus</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a onclick="openPage('about')">🏢 About Us</a></li>
+        <li><a onclick="openPage('blog')">📝 Blog</a></li>
+        <li><a onclick="openPage('careers')">💼 Careers</a></li>
+        <li><a onclick="openPage('press')">📰 Press</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a onclick="openPage('help')">❓ Help Center</a></li>
+        <li><a onclick="openPage('contact')">📞 Contact Us</a></li>
+        <li><a onclick="openPage('refund')">↩️ Refund Policy</a></li>
+        <li><a onclick="openPage('terms')">📋 Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 BusGo Technologies Pvt. Ltd. All rights reserved.</div>
+    <div class="footer-links">
+      <a onclick="openPage('terms')">Privacy</a>
+      <a onclick="openPage('terms')">Terms</a>
+      <a onclick="openPage('terms')">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ===============================
+     LOGIN / SIGNUP MODAL
+     =============================== -->
+<div class="auth-overlay" id="authOverlay" onclick="handleAuthOverlayClick(event)">
+  <div class="auth-modal" id="authModal">
+    <div class="auth-modal-header">
+      <button class="close-btn" onclick="closeAuth()">✕</button>
+      <div class="auth-logo">🚌 <span>Bus</span>Go</div>
+      <div class="auth-tagline">India's #1 Bus Booking Platform</div>
+      <div class="auth-tabs" id="authTabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-body" id="loginForm">
+      <div class="auth-field" id="af-lemail">
+        <label>Email Address</label>
+        <span class="fi">📧</span>
+        <input type="email" id="lEmail" placeholder="yourname@email.com">
+        <div class="err">Please enter a valid email</div>
+      </div>
+      <div class="auth-field" id="af-lpassword">
+        <label>Password</label>
+        <span class="fi">🔒</span>
+        <input type="password" id="lPassword" placeholder="Enter your password" id="loginPw">
+        <button class="toggle-pw" onclick="togglePw('lPassword',this)" type="button">👁</button>
+        <div class="err">Password must be at least 6 characters</div>
+      </div>
+      <a class="forgot-link" onclick="showForgot()">Forgot password?</a>
+      <button class="btn-auth-submit" onclick="doLogin()">Login to BusGo →</button>
+      <div class="auth-divider"><span></span><p>or continue with</p><span></span></div>
+      <button class="btn-social" onclick="doSocialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-note">Don't have an account? <a onclick="switchAuthTab('signup')">Sign up free</a></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="auth-body" id="signupForm" style="display:none">
+      <div class="auth-field" id="af-sname">
+        <label>Full Name</label>
+        <span class="fi">👤</span>
+        <input type="text" id="sName" placeholder="Rahul Sharma">
+        <div class="err">Please enter your full name</div>
+      </div>
+      <div class="auth-field" id="af-semail">
+        <label>Email Address</label>
+        <span class="fi">📧</span>
+        <input type="email" id="sEmail" placeholder="yourname@email.com">
+        <div class="err">Please enter a valid email</div>
+      </div>
+      <div class="auth-field" id="af-sphone">
+        <label>Phone Number</label>
+        <span class="fi">📱</span>
+        <input type="tel" id="sPhone" placeholder="10-digit mobile number">
+        <div class="err">Enter valid 10-digit number</div>
+      </div>
+      <div class="auth-field" id="af-spassword">
+        <label>Password</label>
+        <span class="fi">🔒</span>
+        <input type="password" id="sPassword" placeholder="Min. 6 characters">
+        <button class="toggle-pw" onclick="togglePw('sPassword',this)" type="button">👁</button>
+        <div class="err">Password must be at least 6 characters</div>
+      </div>
+      <button class="btn-auth-submit" onclick="doSignup()">Create Account →</button>
+      <div class="auth-divider"><span></span><p>or continue with</p><span></span></div>
+      <button class="btn-social" onclick="doSocialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-note">Already have an account? <a onclick="switchAuthTab('login')">Login here</a></div>
+      <div class="auth-note" style="margin-top:8px">By signing up you agree to our <a onclick="openPage('terms');closeAuth()">Terms</a> &amp; <a onclick="openPage('terms');closeAuth()">Privacy Policy</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===============================
+     PAGE DRAWER (all content pages)
+     =============================== -->
+<div class="page-overlay" id="pageOverlay" onclick="handlePageOverlayClick(event)">
+  <div class="page-drawer" id="pageDrawer">
+    <div class="page-drawer-header" id="pageDrawerHeader">
+      <div>
+        <h2 id="pageTitle">Page</h2>
+        <p id="pageSubtitle"></p>
+      </div>
+      <button class="close-drawer" onclick="closePage()">✕</button>
+    </div>
+    <div class="page-drawer-body" id="pageBody"></div>
+  </div>
+</div>
+
+<script>
+// ====================================
+// DATA
+// ====================================
+const CITIES = ['Mumbai','Pune','Delhi','Jaipur','Bangalore','Chennai','Hyderabad','Kolkata','Ahmedabad','Surat','Nagpur','Nashik','Lucknow','Kanpur','Indore','Bhopal','Vadodara','Coimbatore','Kochi','Goa','Chandigarh','Amritsar'];
+
+const BUS_DATA = [
+  { id:1, name:'Sharma Travels', type:'AC', rating:4.7, dep:'06:00', arr:'12:00', dur:'6h', price:580, seats:32, booked:[2,5,8,11,14,17], amenities:['💺 AC','📺 TV','🔌 USB'] },
+  { id:2, name:'Royal Travels', type:'Volvo', rating:4.9, dep:'07:30', arr:'14:30', dur:'7h', price:850, seats:28, booked:[1,4,7,13,19,22], amenities:['💺 AC','🍱 Meals','📶 WiFi'] },
+  { id:3, name:'VRL Express', type:'Sleeper', rating:4.3, dep:'22:00', arr:'06:00', dur:'8h', price:680, seats:36, booked:[3,6,9,12,15,20], amenities:['🛏 Sleeper','💺 AC','🔌 USB'] },
+  { id:4, name:'SRS Travels', type:'Non-AC', rating:4.1, dep:'09:00', arr:'15:00', dur:'6h', price:320, seats:40, booked:[2,4,8,16,24,30], amenities:['🚌 Standard'] },
+  { id:5, name:'Orange Tours', type:'AC', rating:4.5, dep:'14:30', arr:'20:30', dur:'6h', price:620, seats:34, booked:[5,10,15,20,25], amenities:['💺 AC','📶 WiFi','🔌 USB'] },
+  { id:6, name:'Paulo Travels', type:'Volvo', rating:4.8, dep:'23:00', arr:'07:00', dur:'8h', price:920, seats:26, booked:[1,3,7,11,15,19], amenities:['💺 AC','🍱 Meals','📶 WiFi','🛏 Sleeper'] },
+  { id:7, name:'Neeta Tours', type:'AC', rating:4.2, dep:'16:00', arr:'23:00', dur:'7h', price:550, seats:38, booked:[6,12,18,24,30], amenities:['💺 AC','🔌 USB'] },
+  { id:8, name:'Patel Travels', type:'Sleeper', rating:4.6, dep:'20:30', arr:'05:00', dur:'8.5h', price:760, seats:30, booked:[2,7,14,21,28], amenities:['🛏 Sleeper','💺 AC','🍱 Snacks'] },
+];
+
+const POPULAR_ROUTES = [
+  {from:'Mumbai',to:'Pune',duration:'2.5h',from_price:150},
+  {from:'Delhi',to:'Jaipur',duration:'4.5h',from_price:300},
+  {from:'Bangalore',to:'Chennai',duration:'6h',from_price:450},
+  {from:'Hyderabad',to:'Bangalore',duration:'8h',from_price:500},
+  {from:'Ahmedabad',to:'Mumbai',duration:'7h',from_price:400},
+  {from:'Delhi',to:'Agra',duration:'3h',from_price:200},
+  {from:'Pune',to:'Goa',duration:'8h',from_price:600},
+  {from:'Chennai',to:'Coimbatore',duration:'5h',from_price:350},
+];
+
+// ====================================
+// AUTH STATE
+// ====================================
+let authUser = null; // { name, email, phone }
+let registeredUsers = []; // mock users db
+let myBookings = []; // bookings for logged in user
+
+// ====================================
+// APP STATE
+// ====================================
+let state = {
+  from: '', to: '', date: '', busTypeSearch: '',
+  selectedBus: null, selectedSeats: [], discount: 0,
+  passenger: {}, payMethod: 'card'
+};
+let activePriceFilter = 3000;
+let activeTimeFilter = 'all';
+
+// ====================================
+// INIT
+// ====================================
+window.onload = () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('travelDate').value = today;
+  renderPopularRoutes();
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.field-wrap')) closeDropdowns();
+    if (!e.target.closest('.user-avatar-wrap')) {
+      document.getElementById('userDropdown').classList.remove('open');
+    }
+  });
+  // Keyboard close
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeAuth(); closePage(); }
+  });
+};
+
+// ====================================
+// DARK MODE
+// ====================================
+function toggleDark() {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('darkBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+
+// ====================================
+// MOBILE MENU
+// ====================================
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ====================================
+// POPULAR ROUTES
+// ====================================
+function renderPopularRoutes() {
+  const c = document.getElementById('popularRoutes');
+  c.innerHTML = POPULAR_ROUTES.map(r => `
+    <div class="route-card" onclick="quickSearch('${r.from}','${r.to}')">
+      <div class="route-cities">${r.from} → ${r.to}</div>
+      <div class="route-info">⏱ ${r.duration}</div>
+      <div class="route-price">From ₹${r.from_price}</div>
+    </div>
+  `).join('');
+}
+
+// ====================================
+// AUTOCOMPLETE
+// ====================================
+function showSuggestions(type, val) {
+  const id = type === 'from' ? 'fromDropdown' : 'toDropdown';
+  const el = document.getElementById(id);
+  const filtered = CITIES.filter(c => c.toLowerCase().includes(val.toLowerCase())).slice(0,6);
+  if (!filtered.length || !val) { el.classList.remove('open'); return; }
+  el.innerHTML = filtered.map(c => `<div class="dropdown-item" onclick="selectCity('${type}','${c}')"><span class="icon">📍</span>${c}</div>`).join('');
+  el.classList.add('open');
+}
+function selectCity(type, city) {
+  if (type === 'from') { document.getElementById('fromCity').value = city; state.from = city; }
+  else { document.getElementById('toCity').value = city; state.to = city; }
+  closeDropdowns();
+}
+function closeDropdowns() {
+  document.querySelectorAll('.dropdown-list').forEach(d => d.classList.remove('open'));
+}
+function swapCities() {
+  const f = document.getElementById('fromCity').value;
+  const t = document.getElementById('toCity').value;
+  document.getElementById('fromCity').value = t;
+  document.getElementById('toCity').value = f;
+  state.from = t; state.to = f;
+}
+function quickSearch(from, to) {
+  document.getElementById('fromCity').value = from;
+  document.getElementById('toCity').value = to;
+  state.from = from; state.to = to;
+  searchBuses();
+}
+
+// ====================================
+// SEARCH
+// ====================================
+function searchBuses() {
+  state.from = document.getElementById('fromCity').value.trim();
+  state.to = document.getElementById('toCity').value.trim();
+  state.date = document.getElementById('travelDate').value;
+  state.busTypeSearch = document.getElementById('busTypeFilter').value;
+  if (!state.from || !state.to) { showToast('⚠️ Please enter From and To cities'); return; }
+  if (state.from === state.to) { showToast('⚠️ From and To cities must be different'); return; }
+  showResults();
+}
+function showResults() {
+  showPage('results-page');
+  document.getElementById('resultsTitle').textContent = `${state.from} → ${state.to}`;
+  const d = state.date ? new Date(state.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) : '';
+  document.getElementById('resultsMeta').textContent = `${d} · ${BUS_DATA.length} buses found`;
+  applyFilters();
+}
+
+function applyFilters() {
+  let buses = [...BUS_DATA];
+  const checkedTypes = [...document.querySelectorAll('.filter-options input[type=checkbox]:checked')].map(x=>x.value);
+  if (checkedTypes.length) buses = buses.filter(b => checkedTypes.includes(b.type));
+  buses = buses.filter(b => b.price <= activePriceFilter);
+  if (activeTimeFilter !== 'all') {
+    buses = buses.filter(b => {
+      const h = parseInt(b.dep.split(':')[0]);
+      if (activeTimeFilter === 'morning') return h >= 5 && h < 12;
+      if (activeTimeFilter === 'afternoon') return h >= 12 && h < 17;
+      if (activeTimeFilter === 'evening') return h >= 17 && h < 21;
+      if (activeTimeFilter === 'night') return h >= 21 || h < 5;
+    });
+  }
+  const minRating = parseFloat(document.querySelector('input[name="rating"]:checked')?.value || 0);
+  if (minRating > 0) buses = buses.filter(b => b.rating >= minRating);
+  const sort = document.getElementById('sortBy').value;
+  if (sort === 'price') buses.sort((a,b) => a.price - b.price);
+  else if (sort === 'price-desc') buses.sort((a,b) => b.price - a.price);
+  else if (sort === 'departure') buses.sort((a,b) => a.dep.localeCompare(b.dep));
+  else if (sort === 'rating') buses.sort((a,b) => b.rating - a.rating);
+  renderBuses(buses);
+}
+
+function updatePrice(val) {
+  activePriceFilter = parseInt(val);
+  document.getElementById('priceLabel').textContent = `₹${val}`;
+  applyFilters();
+}
+function filterTime(el, t) {
+  document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeTimeFilter = t;
+  applyFilters();
+}
+
+function renderBuses(buses) {
+  const c = document.getElementById('busList');
+  if (!buses.length) { c.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text2)"><div style="font-size:3rem;margin-bottom:12px">🚫</div><h3>No buses found</h3><p>Try adjusting your filters</p></div>'; return; }
+  c.innerHTML = buses.map((b,i) => `
+    <div class="bus-card" style="animation-delay:${i*0.06}s">
+      <div class="bus-card-header">
+        <div>
+          <div class="bus-name">${b.name}</div>
+          <div class="bus-type-badge">${b.type}</div>
+        </div>
+        <div class="bus-rating">⭐ ${b.rating}</div>
+        <div style="display:flex;gap:24px;align-items:center">
+          <div class="time-block"><div class="time">${b.dep}</div><div class="label">Dep</div></div>
+          <div class="duration-block">
+            <div class="duration-line"><div class="dur-dash"></div><div class="dur-icon">🚌</div><div class="dur-dash"></div></div>
+            <div class="dur">${b.dur}</div>
+          </div>
+          <div class="time-block"><div class="time">${b.arr}</div><div class="label">Arr</div></div>
+        </div>
+        <div class="price-block"><div class="from">from</div><div class="amount">₹${b.price}</div></div>
+        <button class="btn-view-seats" onclick="selectBus(${b.id})">Select Seats →</button>
+      </div>
+      <div class="bus-card-footer">
+        <div class="seat-count">🪑 <span class="num">${b.seats - b.booked.length}</span> seats available</div>
+        <div class="amenities">${b.amenities.map(a => `<span class="amenity">${a}</span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====================================
+// SEAT SELECTION
+// ====================================
+function selectBus(id) {
+  state.selectedBus = BUS_DATA.find(b => b.id === id);
+  state.selectedSeats = [];
+  state.discount = 0;
+  document.getElementById('couponInput').value = '';
+  document.getElementById('couponSuccess').style.display = 'none';
+  document.getElementById('discountRow').style.display = 'none';
+  showPage('seat-page');
+  renderStepBar('stepBar', 2);
+  renderSeatGrid();
+  updateSummary();
+}
+
+function renderSeatGrid() {
+  const bus = state.selectedBus;
+  document.getElementById('seatPanelTitle').textContent = `${bus.name} – ${bus.type}`;
+  document.getElementById('sumBusName').textContent = bus.name;
+  document.getElementById('sumRoute').textContent = `${state.from} → ${state.to}`;
+  document.getElementById('sumDate').textContent = state.date ? new Date(state.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '-';
+  document.getElementById('sumDep').textContent = bus.dep;
+
+  const grid = document.getElementById('seatGrid');
+  const totalSeats = bus.seats;
+  let html = '';
+  for (let i = 1; i <= totalSeats; i++) {
+    const col = ((i - 1) % 5) + 1;
+    let cls = 'available';
+    if (bus.booked.includes(i)) cls = 'booked';
+    if (col === 3) {
+      html += `<div class="seat seat-aisle"></div>`;
+    }
+    // after aisle col logic: cols 1,2 | gap | 4,5 mapped to 1,2,_,3,4
+    const gridCol = col <= 2 ? col : col + 1;
+    html += `<div class="seat ${cls}" data-seat="${i}" onclick="toggleSeat(${i})">${i}</div>`;
+  }
+  grid.innerHTML = '';
+  // Rebuild with proper 2+aisle+2 layout
+  for (let i = 1; i <= totalSeats; i++) {
+    const col = ((i-1) % 4) + 1;
+    let cls = bus.booked.includes(i) ? 'booked' : 'available';
+    if (col === 3) grid.insertAdjacentHTML('beforeend', `<div class="seat seat-aisle"></div>`);
+    grid.insertAdjacentHTML('beforeend', `<div class="seat ${cls}" id="s${i}" onclick="toggleSeat(${i})">${i}</div>`);
+  }
+}
+
+function toggleSeat(num) {
+  const bus = state.selectedBus;
+  if (bus.booked.includes(num)) return;
+  const idx = state.selectedSeats.indexOf(num);
+  if (idx > -1) {
+    state.selectedSeats.splice(idx, 1);
+    document.getElementById('s'+num).className = 'seat available';
+  } else {
+    if (state.selectedSeats.length >= 6) { showToast('⚠️ Max 6 seats per booking'); return; }
+    state.selectedSeats.push(num);
+    document.getElementById('s'+num).className = 'seat selected';
+  }
+  updateSummary();
+}
+
+function updateSummary() {
+  const bus = state.selectedBus;
+  const cnt = state.selectedSeats.length;
+  const chips = document.getElementById('selectedChips');
+  chips.innerHTML = cnt ? state.selectedSeats.map(s=>`<div class="seat-chip">S${s}</div>`).join('') : '<span style="color:var(--text3);font-size:0.82rem">No seats selected</span>';
+  document.getElementById('sumPrice').textContent = `₹${bus.price}`;
+  document.getElementById('sumSeats').textContent = cnt;
+  const subtotal = bus.price * cnt;
+  const total = subtotal - state.discount;
+  document.getElementById('totalAmt').textContent = `₹${total}`;
+  document.getElementById('proceedBtn').disabled = cnt === 0;
+}
+
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const coupons = { 'BUSGO10': 100, 'FIRST50': 50, 'SAVE20': 200, 'WELCOME': 150 };
+  if (coupons[code]) {
+    state.discount = coupons[code];
+    document.getElementById('discountAmt').textContent = coupons[code];
+    document.getElementById('couponSuccess').style.display = 'block';
+    document.getElementById('discountRow').style.display = 'flex';
+    document.getElementById('discountDisplay').textContent = `-₹${coupons[code]}`;
+    updateSummary();
+    showToast('🎉 Coupon applied successfully!');
+  } else {
+    showToast('❌ Invalid coupon code');
+    state.discount = 0;
+    document.getElementById('couponSuccess').style.display = 'none';
+    document.getElementById('discountRow').style.display = 'none';
+    updateSummary();
+  }
+}
+
+// ====================================
+// DETAILS & PAYMENT
+// ====================================
+function goDetails() {
+  if (state.selectedSeats.length === 0) { showToast('⚠️ Please select at least one seat'); return; }
+  showPage('details-page');
+  renderStepBar('stepBar2', 3);
+  if (authUser) {
+    document.getElementById('pName').value = authUser.name;
+    document.getElementById('pEmail').value = authUser.email;
+    if (authUser.phone) document.getElementById('pPhone').value = authUser.phone;
+  }
+}
+
+function selectPay(el, method) {
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+  state.payMethod = method;
+  document.getElementById('cardFields').style.display = method === 'card' ? 'block' : 'none';
+  document.getElementById('upiField').style.display = method === 'upi' ? 'block' : 'none';
+}
+
+function processPayment() {
+  const name = document.getElementById('pName').value.trim();
+  const phone = document.getElementById('pPhone').value.trim();
+  const email = document.getElementById('pEmail').value.trim();
+  const age = document.getElementById('pAge').value;
+  let ok = true;
+  ['ff-name','ff-phone','ff-email','ff-age'].forEach(id => document.getElementById(id).classList.remove('error'));
+  if (!name) { document.getElementById('ff-name').classList.add('error'); ok = false; }
+  if (!/^\d{10}$/.test(phone)) { document.getElementById('ff-phone').classList.add('error'); ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('ff-email').classList.add('error'); ok = false; }
+  if (!age || age < 5 || age > 100) { document.getElementById('ff-age').classList.add('error'); ok = false; }
+  if (!ok) return;
+  state.passenger = { name, phone, email, age };
+  const loader = document.getElementById('payLoader');
+  loader.classList.add('show');
+  setTimeout(() => {
+    loader.classList.remove('show');
+    showConfirmation();
+  }, 2200);
+}
+
+function showConfirmation() {
+  const b = state.selectedBus;
+  const p = state.passenger;
+  const seats = state.selectedSeats;
+  const total = Math.max(0, b.price * seats.length - state.discount);
+  const bid = 'BG' + Date.now().toString().slice(-8);
+  document.getElementById('ticketId').textContent = bid;
+  document.getElementById('tcFrom').textContent = state.from;
+  document.getElementById('tcTo').textContent = state.to;
+  document.getElementById('tcDep').textContent = b.dep;
+  document.getElementById('tcArr').textContent = b.arr;
+  document.getElementById('tcName').textContent = p.name;
+  document.getElementById('tcBus').textContent = b.name;
+  document.getElementById('tcSeats').textContent = seats.join(', ');
+  document.getElementById('tcDate').textContent = state.date ? new Date(state.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : 'Today';
+  document.getElementById('tcPhone').textContent = p.phone;
+  document.getElementById('tcAmount').textContent = `₹${total}`;
+  document.getElementById('qrCode').textContent = `QR: ${bid}`;
+  // Save booking
+  myBookings.unshift({
+    id: bid, from: state.from, to: state.to, bus: b.name, type: b.type,
+    date: state.date, dep: b.dep, arr: b.arr, seats: seats.join(', '),
+    amount: total, status: 'confirmed', passenger: p.name
+  });
+  showPage('confirm-page');
+  launchConfetti();
+}
+
+// ====================================
+// CONFETTI
+// ====================================
+function launchConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#e8521a','#f07c4a','#2d9e6b','#f0b429','#4a90e2','#e040fb'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `left:${Math.random()*100}%;top:${-10-Math.random()*20}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()*2}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+    wrap.appendChild(p);
+  }
+  setTimeout(() => wrap.innerHTML = '', 5000);
+}
+
+// ====================================
+// STEP BAR
+// ====================================
+function renderStepBar(id, active) {
+  const steps = ['Search','Seats','Details','Payment'];
+  const el = document.getElementById(id);
+  let html = '';
+  steps.forEach((s,i) => {
+    const n = i+1;
+    const cls = n < active ? 'done' : n === active ? 'active' : '';
+    html += `<div class="step ${cls}"><div class="step-num">${n < active ? '✓' : n}</div><div class="step-label">${s}</div></div>`;
+    if (i < steps.length-1) html += `<div class="step-line ${n < active ? 'done' : ''}"></div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ====================================
+// NAVIGATION
+// ====================================
+function showPage(id) {
+  ['home-page','results-page','seat-page','details-page','confirm-page'].forEach(p => {
+    document.getElementById(p).style.display = p === id ? 'block' : 'none';
+  });
+  // Show/hide footer
+  document.getElementById('site-footer').style.display = id === 'home-page' ? 'block' : 'none';
+  window.scrollTo(0,0);
+}
+function goHome() {
+  showPage('home-page');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+function goResults() { showPage('results-page'); }
+function goSeat() { showPage('seat-page'); }
+
+// ====================================
+// TOAST
+// ====================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.querySelector('#toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ====================================
+// SCROLL REVEAL
+// ====================================
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.route-card').forEach(el => {
+  el.style.opacity='0'; el.style.transform='translateY(20px)';
+  el.style.transition='opacity 0.5s, transform 0.5s';
+  observer.observe(el);
+});
+
+// ====================================
+// ====================================
+// AUTH SYSTEM
+// ====================================
+// ====================================
+
+function openAuth(tab = 'login') {
+  const overlay = document.getElementById('authOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchAuthTab(tab);
+}
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  clearAuthErrors();
+}
+function handleAuthOverlayClick(e) {
+  if (e.target === document.getElementById('authOverlay')) closeAuth();
+}
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+  document.getElementById('loginForm').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = isLogin ? 'none' : 'block';
+  clearAuthErrors();
+}
+function clearAuthErrors() {
+  document.querySelectorAll('.auth-field').forEach(f => f.classList.remove('error'));
+}
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁'; }
+}
+function showForgot() {
+  showToast('📧 Password reset link sent to your email!');
+}
+
+function doLogin() {
+  const email = document.getElementById('lEmail').value.trim();
+  const password = document.getElementById('lPassword').value;
+  let ok = true;
+  document.getElementById('af-lemail').classList.remove('error');
+  document.getElementById('af-lpassword').classList.remove('error');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('af-lemail').classList.add('error'); ok = false; }
+  if (password.length < 6) { document.getElementById('af-lpassword').classList.add('error'); ok = false; }
+  if (!ok) return;
+  // Check registered users
+  const user = registeredUsers.find(u => u.email === email && u.password === password);
+  if (user) {
+    loginSuccess(user);
+  } else if (registeredUsers.some(u => u.email === email)) {
+    document.getElementById('af-lpassword').classList.add('error');
+    showToast('❌ Incorrect password');
+  } else {
+    // Auto-create account for demo
+    const newUser = { name: email.split('@')[0], email, phone: '', password };
+    registeredUsers.push(newUser);
+    loginSuccess(newUser);
+  }
+}
+
+function doSignup() {
+  const name = document.getElementById('sName').value.trim();
+  const email = document.getElementById('sEmail').value.trim();
+  const phone = document.getElementById('sPhone').value.trim();
+  const password = document.getElementById('sPassword').value;
+  let ok = true;
+  ['af-sname','af-semail','af-sphone','af-spassword'].forEach(id => document.getElementById(id).classList.remove('error'));
+  if (!name || name.length < 2) { document.getElementById('af-sname').classList.add('error'); ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('af-semail').classList.add('error'); ok = false; }
+  if (!/^\d{10}$/.test(phone)) { document.getElementById('af-sphone').classList.add('error'); ok = false; }
+  if (password.length < 6) { document.getElementById('af-spassword').classList.add('error'); ok = false; }
+  if (!ok) return;
+  if (registeredUsers.some(u => u.email === email)) {
+    document.getElementById('af-semail').classList.add('error');
+    showToast('⚠️ Email already registered. Please login.');
+    return;
+  }
+  const newUser = { name, email, phone, password };
+  registeredUsers.push(newUser);
+  loginSuccess(newUser);
+}
+
+function doSocialLogin(provider) {
+  const mockUser = { name: 'Demo User', email: 'demo@busgo.in', phone: '9876543210', password: '' };
+  if (!registeredUsers.find(u => u.email === mockUser.email)) registeredUsers.push(mockUser);
+  loginSuccess(mockUser);
+}
+
+function loginSuccess(user) {
+  authUser = user;
+  closeAuth();
+  updateAuthUI();
+  showToast(`🎉 Welcome back, ${user.name.split(' ')[0]}!`);
+}
+
+function updateAuthUI() {
+  if (authUser) {
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('mobileLoginBtn').style.display = 'none';
+    document.getElementById('userAvatarWrap').style.display = 'block';
+    const initials = authUser.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('ddName').textContent = authUser.name;
+    document.getElementById('ddEmail').textContent = authUser.email;
+  } else {
+    document.getElementById('loginBtn').style.display = 'block';
+    document.getElementById('mobileLoginBtn').style.display = 'block';
+    document.getElementById('userAvatarWrap').style.display = 'none';
+  }
+}
+
+function toggleUserDD() {
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+
+function logout() {
+  authUser = null;
+  updateAuthUI();
+  document.getElementById('userDropdown').classList.remove('open');
+  showToast('👋 Logged out successfully');
+}
+
+// ====================================
+// ====================================
+// PAGE DRAWER SYSTEM
+// ====================================
+// ====================================
+
+function openPage(pageId) {
+  const overlay = document.getElementById('pageOverlay');
+  const body = document.getElementById('pageBody');
+  const pages = {
+    bookings: { title: '🎫 My Bookings', subtitle: 'View and manage your trips' },
+    offers: { title: '🏷️ Offers & Deals', subtitle: 'Exclusive discounts for you' },
+    track: { title: '📍 Track Bus', subtitle: 'Real-time bus location' },
+    about: { title: '🏢 About BusGo', subtitle: 'Our story and mission' },
+    blog: { title: '📝 BusGo Blog', subtitle: 'Travel tips and stories' },
+    careers: { title: '💼 Careers', subtitle: 'Join our growing team' },
+    press: { title: '📰 Press Room', subtitle: 'News and media coverage' },
+    help: { title: '❓ Help Center', subtitle: 'FAQs and support guides' },
+    contact: { title: '📞 Contact Us', subtitle: 'We\'re here to help 24/7' },
+    refund: { title: '↩️ Refund Policy', subtitle: 'Cancellations & refunds' },
+    terms: { title: '📋 Terms & Privacy', subtitle: 'Legal information' },
+  };
+  const page = pages[pageId];
+  if (!page) return;
+  document.getElementById('pageTitle').textContent = page.title;
+  document.getElementById('pageSubtitle').textContent = page.subtitle;
+  body.innerHTML = getPageContent(pageId);
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Init interactive elements after render
+  if (pageId === 'help') initFAQ();
+  if (pageId === 'offers') initOfferCopy();
+  if (pageId === 'track') initTrack();
+}
+
+function closePage() {
+  document.getElementById('pageOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handlePageOverlayClick(e) {
+  if (e.target === document.getElementById('pageOverlay')) closePage();
+}
+
+// ====================================
+// PAGE CONTENT GENERATORS
+// ====================================
+function getPageContent(id) {
+  switch(id) {
+    case 'bookings': return getBookingsContent();
+    case 'offers': return getOffersContent();
+    case 'track': return getTrackContent();
+    case 'about': return getAboutContent();
+    case 'blog': return getBlogContent();
+    case 'careers': return getCareersContent();
+    case 'press': return getPressContent();
+    case 'help': return getHelpContent();
+    case 'contact': return getContactContent();
+    case 'refund': return getRefundContent();
+    case 'terms': return getTermsContent();
+    default: return '<p>Coming soon.</p>';
+  }
+}
+
+function getBookingsContent() {
+  if (!authUser) {
+    return `<div class="empty-state">
+      <div class="icon">🔐</div>
+      <h3>Login to view your bookings</h3>
+      <p>Sign in to access your booking history, download tickets, and manage your trips.</p>
+      <button class="btn-search" style="margin-top:20px" onclick="closePage();openAuth('login')">Login / Sign Up →</button>
+    </div>`;
+  }
+  if (myBookings.length === 0) {
+    return `<div class="empty-state">
+      <div class="icon">🎫</div>
+      <h3>No bookings yet</h3>
+      <p>Your booked tickets will appear here. Start your journey today!</p>
+      <button class="btn-search" style="margin-top:20px" onclick="closePage();goHome()">Search Buses →</button>
+    </div>`;
+  }
+  return myBookings.map(b => `
+    <div class="booking-card">
+      <div class="booking-card-top">
+        <div class="bid">Booking ID: <span>${b.id}</span></div>
+        <div class="booking-status confirmed">✓ Confirmed</div>
+      </div>
+      <div class="booking-card-body">
+        <div class="booking-route">${b.from} → ${b.to}</div>
+        <div class="booking-meta">
+          <span>🚌 ${b.bus}</span>
+          <span>📅 ${b.date ? new Date(b.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : 'Today'}</span>
+          <span>⏰ ${b.dep}</span>
+          <span>🪑 Seats: ${b.seats}</span>
+          <span style="color:var(--accent);font-weight:700">₹${b.amount}</span>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-download" style="flex:unset;padding:8px 16px;font-size:0.8rem" onclick="showToast('📥 Downloading ticket...')">📥 Download</button>
+          <button class="btn-print" style="flex:unset;padding:8px 16px;font-size:0.8rem" onclick="showToast('❌ Booking cancelled. Refund initiated.')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getOffersContent() {
+  return `
+    <div style="margin-bottom:20px;padding:16px;background:linear-gradient(135deg,rgba(232,82,26,0.1),rgba(240,124,74,0.05));border:1px solid rgba(232,82,26,0.2);border-radius:var(--radius)">
+      <p style="font-size:0.85rem;color:var(--text2)">🎁 Click any code to copy it, then enter at checkout to save!</p>
+    </div>
+    ${[
+      {pct:'10% OFF',title:'First Booking Offer',desc:'Get 10% off on your first BusGo booking',code:'BUSGO10',exp:'Valid till 31 Dec 2025',min:'Min. ₹300'},
+      {pct:'₹50 OFF',title:'Weekend Special',desc:'Book any weekend trip and save flat ₹50',code:'FIRST50',exp:'Weekends only',min:'Min. ₹200'},
+      {pct:'₹200 OFF',title:'Premium Traveller',desc:'Save ₹200 on Volvo or Premium AC buses',code:'SAVE20',exp:'Valid for Volvo/AC',min:'Min. ₹800'},
+      {pct:'₹150 OFF',title:'Welcome Discount',desc:'New users get ₹150 off their first booking',code:'WELCOME',exp:'New users only',min:'Min. ₹500'},
+      {pct:'15% OFF',title:'Festive Special',desc:'Celebrate the season with 15% off all routes',code:'FESTIVE15',exp:'Limited time',min:'Min. ₹400'},
+      {pct:'₹100 OFF',title:'Referral Reward',desc:'Refer a friend and both save ₹100',code:'REFER100',exp:'1 use per referral',min:'Any amount'},
+    ].map(o => `
+      <div class="offer-card">
+        <div class="offer-badge">${o.pct}</div>
+        <div class="offer-info">
+          <h4>${o.title}</h4>
+          <p>${o.desc}</p>
+          <span class="offer-code" onclick="copyCode('${o.code}')">${o.code} 📋</span>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:6px">${o.exp} · ${o.min}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function getTrackContent() {
+  return `
+    <div class="track-input-row">
+      <input type="text" id="trackInput" placeholder="Enter Booking ID (e.g. BG12345678)" value="">
+      <button class="btn-search" style="padding:12px 20px;white-space:nowrap" onclick="doTrack()">Track →</button>
+    </div>
+    <div id="trackResult">
+      <div class="track-map-placeholder">
+        <span style="font-size:2.5rem">🗺️</span>
+        <span>Enter your booking ID to see live location</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text2);text-align:center">Try: BG12345678 or any booking ID</p>
+    </div>
+  `;
+}
+
+function getAboutContent() {
+  return `
+    <div class="content-section">
+      <h3>Our Story</h3>
+      <p>BusGo was founded in 2018 with a simple mission: make bus travel as seamless as possible for every Indian. We started as a small team in Pune, frustrated by unreliable booking platforms and opaque pricing. Today, we serve millions of passengers across 500+ cities.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">10M+</div><div class="lbl">Happy Passengers</div></div>
+      <div class="stat-box"><div class="num">500+</div><div class="lbl">Cities Connected</div></div>
+      <div class="stat-box"><div class="num">2000+</div><div class="lbl">Bus Routes</div></div>
+      <div class="stat-box"><div class="num">50+</div><div class="lbl">Bus Partners</div></div>
+    </div>
+    <div class="content-section" style="margin-top:28px">
+      <h3>Our Mission</h3>
+      <p>We believe safe, affordable, and comfortable travel should be accessible to everyone. Our platform connects travellers with the best bus operators across India, offering real-time seat availability, transparent pricing, and instant confirmations.</p>
+    </div>
+    <div class="content-grid">
+      <div class="content-card"><div class="icon">🛡️</div><h4>Safety First</h4><p>All operators on our platform are verified and rated by real passengers.</p></div>
+      <div class="content-card"><div class="icon">💰</div><h4>Best Prices</h4><p>Price match guarantee — if you find it cheaper, we'll refund the difference.</p></div>
+      <div class="content-card"><div class="icon">⚡</div><h4>Instant Booking</h4><p>Book in under 60 seconds. Tickets delivered instantly to your inbox.</p></div>
+      <div class="content-card"><div class="icon">🤝</div><h4>24/7 Support</h4><p>Our support team is always ready to help, day or night.</p></div>
+    </div>
+    <div class="content-section" style="margin-top:28px">
+      <h3>Leadership Team</h3>
+      <div class="content-grid">
+        <div class="content-card"><div class="icon">🧑‍💻</div><h4>Niteen Wadhai</h4><p>CEO & Co-founder. Ex-Google, IIT Bombay alumnus.</p></div>
+        <div class="content-card"><div class="icon">👨‍💻</div><h4>Prajwal Thakare</h4><p>CTO & Co-founder. Ex-Flipkart, IIT Delhi alumnus.</p></div>
+        <div class="content-card"><div class="icon">👩‍💼</div><h4>Shrushti Paunikar</h4><p>COO. Built operations from 0 to 500+ cities.</p></div>
+        <div class="content-card"><div class="icon">👩‍💼</div><h4>Payal Yadav</h4><p>CPO. Obsessed with user experience and product design.</p></div>
+      </div>
+    </div>
+  `;
+}
+
+function getBlogContent() {
+  return [
+    {emoji:'🗺️',tag:'Travel Tips',title:'10 Best Bus Routes in India You Must Experience',desc:'From the scenic Manali highways to the coastal Konkan route, discover bus journeys that are destinations in themselves.',date:'Dec 15, 2025'},
+    {emoji:'💡',tag:'How To',title:'How to Get the Cheapest Bus Tickets on BusGo',desc:'Pro tips for finding last-minute deals, using coupons effectively, and booking during off-peak times.',date:'Dec 10, 2025'},
+    {emoji:'🌄',tag:'Destinations',title:'Bangalore to Goa: A Complete Travel Guide',desc:'Everything you need for an epic bus journey from tech city to beach paradise. Packing list, stops, and more.',date:'Dec 5, 2025'},
+    {emoji:'🚌',tag:'Operator Spotlight',title:'Why Passengers Love Royal Travels: An Inside Look',desc:'We sat down with the team at Royal Travels to understand their 4.9-star rating and what sets them apart.',date:'Nov 28, 2025'},
+    {emoji:'🎒',tag:'Packing',title:'Essential Bus Travel Kit: What to Pack in 2025',desc:'The ultimate packing guide for overnight buses, sleeper coaches, and long-haul journeys.',date:'Nov 20, 2025'},
+    {emoji:'💚',tag:'Sustainability',title:'How BusGo is Reducing India\'s Carbon Footprint',desc:'Our initiative to partner with electric bus operators and offset emissions from every booking.',date:'Nov 12, 2025'},
+  ].map(b => `
+    <div class="blog-card" onclick="showToast('Opening: ${b.title.substring(0,30)}...')">
+      <div class="blog-img" style="background:var(--bg2)">${b.emoji}</div>
+      <div class="blog-content">
+        <div class="blog-tag">${b.tag}</div>
+        <h4>${b.title}</h4>
+        <p>${b.desc}</p>
+        <div class="blog-meta">📅 ${b.date} · 5 min read</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getCareersContent() {
+  return `
+    <div class="content-section">
+      <h3>Life at BusGo</h3>
+      <p>We're a team of 200+ passionate people working to transform how India travels. We move fast, build boldly, and care deeply about our users. Join us and make a real difference.</p>
+      <div class="content-grid" style="margin-top:16px">
+        <div class="content-card"><div class="icon">🏥</div><h4>Full Benefits</h4><p>Health, dental, vision + family coverage from day one.</p></div>
+        <div class="content-card"><div class="icon">🏠</div><h4>Remote Friendly</h4><p>Work from anywhere in India. We trust our team.</p></div>
+        <div class="content-card"><div class="icon">📈</div><h4>ESOPs</div><p>Every full-time employee gets meaningful equity.</p></div>
+        <div class="content-card"><div class="icon">📚</div><h4>Learning Budget</h4><p>₹50,000/year for courses, books, and conferences.</p></div>
+      </div>
+    </div>
+    <div class="content-section">
+      <h3>Open Roles</h3>
+      ${[
+        {title:'Senior Full-Stack Engineer',dept:'Engineering',loc:'Pune / Remote',type:'Full-time'},
+        {title:'Product Manager — Growth',dept:'Product',loc:'Bangalore',type:'Full-time'},
+        {title:'iOS Developer',dept:'Engineering',loc:'Remote',type:'Full-time'},
+        {title:'Data Scientist',dept:'Analytics',loc:'Pune / Remote',type:'Full-time'},
+        {title:'Marketing Lead — Performance',dept:'Marketing',loc:'Mumbai',type:'Full-time'},
+        {title:'Customer Success Associate',dept:'Operations',loc:'Pune',type:'Full-time'},
+        {title:'UX Designer',dept:'Design',loc:'Remote',type:'Full-time'},
+        {title:'Business Development Manager',dept:'Partnerships',loc:'Delhi',type:'Full-time'},
+      ].map(j => `
+        <div class="job-card" onclick="showToast('Applying for: ${j.title}')">
+          <h4>${j.title}</h4>
+          <p style="font-size:0.82rem;color:var(--text2);margin-top:4px">${j.dept}</p>
+          <div class="job-tags">
+            <span class="job-tag">📍 ${j.loc}</span>
+            <span class="job-tag green">🟢 ${j.type}</span>
+          </div>
+        </div>
+      `).join('')}
+      <div style="text-align:center;padding:20px">
+        <p style="color:var(--text2);font-size:0.85rem;margin-bottom:12px">Don't see a fit? We're always looking for exceptional talent.</p>
+        <button class="btn-search" onclick="showToast('Email sent to careers@busgo.in!')">Send Your Resume →</button>
+      </div>
+    </div>
+  `;
+}
+
+function getPressContent() {
+  return `
+    <div class="content-section">
+      <h3>Press Inquiries</h3>
+      <p>For media inquiries, interviews, and press assets, contact us at <strong>press@busgo.in</strong> or call +91 20 1234 5678.</p>
+    </div>
+    <div class="content-section">
+      <h3>As Seen In</h3>
+      <div class="press-logo-grid">
+        ${['TechCrunch','Economic Times','YourStory','The Hindu','Mint','Inc42'].map(n => `<div class="press-logo">${n}</div>`).join('')}
+      </div>
+    </div>
+    <div class="content-section">
+      <h3>Recent Coverage</h3>
+      ${[
+        {title:'BusGo raises ₹200Cr Series C, plans to expand to 1000 cities',source:'Economic Times',date:'Dec 2025'},
+        {title:'How BusGo is disrupting the ₹50,000 crore bus ticketing market',source:'YourStory',date:'Nov 2025'},
+        {title:'BusGo launches real-time bus tracking for 2000+ routes',source:'TechCrunch India',date:'Oct 2025'},
+        {title:'BusGo named India\'s most trusted travel startup 2025',source:'Inc42',date:'Sep 2025'},
+        {title:'10 million passengers and counting: The BusGo story',source:'The Hindu',date:'Aug 2025'},
+      ].map(a => `
+        <div class="press-article">
+          <div>
+            <h4>${a.title}</h4>
+            <p>${a.date}</p>
+          </div>
+          <div class="press-source">${a.source}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="content-section">
+      <h3>Press Kit</h3>
+      <div class="content-grid">
+        <div class="content-card" style="cursor:pointer" onclick="showToast('📥 Downloading logo pack...')"><div class="icon">🎨</div><h4>Logo Pack</h4><p>High-res logos in all formats (SVG, PNG, PDF)</p></div>
+        <div class="content-card" style="cursor:pointer" onclick="showToast('📥 Downloading brand kit...')"><div class="icon">📋</div><h4>Brand Guidelines</h4><p>Colors, fonts, usage rules and brand assets</p></div>
+        <div class="content-card" style="cursor:pointer" onclick="showToast('📥 Downloading fact sheet...')"><div class="icon">📊</div><h4>Fact Sheet</h4><p>Key stats, milestones and product overview</p></div>
+        <div class="content-card" style="cursor:pointer" onclick="showToast('📥 Downloading photos...')"><div class="icon">📸</div><h4>Photo Library</h4><p>High-res product screenshots and team photos</p></div>
+      </div>
+    </div>
+  `;
+}
+
+function getHelpContent() {
+  const faqs = [
+    {q:'How do I cancel my booking?',a:'Go to My Bookings, select the booking you want to cancel, and click "Cancel". Cancellations made 24+ hours before departure get a full refund. Cancellations within 24 hours may incur a fee as per our Refund Policy.'},
+    {q:'When will I receive my refund?',a:'Refunds are processed within 5–7 business days after cancellation. The amount is credited to your original payment method. UPI refunds are usually faster (1–3 days).'},
+    {q:'Can I change my travel date?',a:'Date changes are subject to availability. Go to My Bookings → select booking → "Modify Trip". A rescheduling fee of ₹50 may apply depending on the operator.'},
+    {q:'My payment failed but money was deducted. What do I do?',a:'Don\'t worry! If money was deducted but booking not confirmed, it will auto-refund within 3–5 business days. If it doesn\'t, contact support with your transaction ID.'},
+    {q:'How do I download my ticket?',a:'After booking, your ticket is sent to your registered email immediately. You can also go to My Bookings and click "Download" on any confirmed booking.'},
+    {q:'Is it safe to pay on BusGo?',a:'Absolutely! We use 256-bit SSL encryption and are PCI DSS compliant. We never store your card details. All payments go through RBI-approved payment gateways.'},
+    {q:'Can I book for someone else?',a:'Yes! You can book tickets for family or friends. Just enter their details in the Passenger Details section. The booking confirmation will be sent to the email you used to login.'},
+    {q:'Why can\'t I see buses for my route?',a:'Buses are subject to availability and may not run on all dates. Try adjusting your date or search with flexible dates. Some routes may only have limited operators.'},
+  ];
+  return `
+    <div style="margin-bottom:24px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${['Bookings','Payments','Cancellations','Tracking','Account'].map(c => `<span style="padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);font-size:0.82rem;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color=''">${c}</span>`).join('')}
+      </div>
+    </div>
+    <h3 style="margin-bottom:16px;font-size:1.1rem">Frequently Asked Questions</h3>
+    <div id="faqList">
+      ${faqs.map((f,i) => `
+        <div class="faq-item">
+          <div class="faq-q" id="fq${i}" onclick="toggleFAQ(${i})">
+            <span>${f.q}</span>
+            <span class="arr">▼</span>
+          </div>
+          <div class="faq-a" id="fa${i}">${f.a}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top:28px;text-align:center;padding:24px;background:var(--bg2);border-radius:var(--radius)">
+      <p style="font-size:0.9rem;color:var(--text2);margin-bottom:12px">Still need help? Our team is available 24/7</p>
+      <button class="btn-search" onclick="closePage();openPage('contact')">Contact Support →</button>
+    </div>
+  `;
+}
+
+function getContactContent() {
+  return `
+    <div class="contact-channels">
+      <div class="channel-card">
+        <div class="ic">💬</div>
+        <h4>Live Chat</h4>
+        <p>Available 24/7. Avg. response: 2 min</p>
+        <button class="btn-nav" style="margin-top:10px;width:100%;font-size:0.8rem" onclick="showToast('Opening live chat...')">Start Chat</button>
+      </div>
+      <div class="channel-card">
+        <div class="ic">📞</div>
+        <h4>Phone Support</h4>
+        <p>1800-123-4567 (Toll Free)<br>Mon–Sun, 6AM–11PM</p>
+      </div>
+      <div class="channel-card">
+        <div class="ic">📧</div>
+        <h4>Email</h4>
+        <p>support@busgo.in<br>Reply within 4 hours</p>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px">
+      <h3 style="margin-bottom:20px">Send us a message</h3>
+      <div class="contact-grid">
+        <div class="c-field">
+          <label>Full Name</label>
+          <input type="text" id="cName" placeholder="Your name" value="${authUser ? authUser.name : ''}">
+        </div>
+        <div class="c-field">
+          <label>Email</label>
+          <input type="email" id="cEmail" placeholder="Your email" value="${authUser ? authUser.email : ''}">
+        </div>
+        <div class="c-field">
+          <label>Category</label>
+          <select>
+            <option>Booking Issue</option>
+            <option>Payment Problem</option>
+            <option>Cancellation / Refund</option>
+            <option>App Feedback</option>
+            <option>Partner Inquiry</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="c-field">
+          <label>Booking ID (if applicable)</label>
+          <input type="text" placeholder="e.g. BG12345678">
+        </div>
+      </div>
+      <div class="c-field" style="margin-top:14px">
+        <label>Message</label>
+        <textarea rows="4" placeholder="Describe your issue in detail..."></textarea>
+      </div>
+      <button class="btn-search" style="margin-top:16px;width:100%" onclick="submitContact()">Send Message →</button>
+    </div>
+  `;
+}
+
+function getRefundContent() {
+  return `
+    <div class="legal-section">
+      <h3>Cancellation Window</h3>
+      <p>BusGo offers flexible cancellations depending on when you cancel relative to the departure time:</p>
+      <div style="margin-top:12px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+          <thead>
+            <tr style="background:var(--bg2)">
+              <th style="padding:10px 14px;text-align:left;font-weight:600;border:1px solid var(--border)">Cancellation Time</th>
+              <th style="padding:10px 14px;text-align:left;font-weight:600;border:1px solid var(--border)">Refund Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              ['More than 48 hours before departure','100% refund'],
+              ['24–48 hours before departure','75% refund'],
+              ['12–24 hours before departure','50% refund'],
+              ['4–12 hours before departure','25% refund'],
+              ['Less than 4 hours before departure','No refund'],
+            ].map(([t,r]) => `<tr><td style="padding:10px 14px;border:1px solid var(--border);color:var(--text2)">${t}</td><td style="padding:10px 14px;border:1px solid var(--border);color:var(--green);font-weight:600">${r}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="legal-section">
+      <h3>How to Cancel</h3>
+      <ul>
+        <li>Go to <strong>My Bookings</strong> in your account</li>
+        <li>Select the booking you wish to cancel</li>
+        <li>Click "Cancel Booking" and confirm</li>
+        <li>You'll receive a cancellation confirmation via email/SMS</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Refund Processing</h3>
+      <p>Refunds are processed within <strong>5–7 business days</strong> to your original payment method:</p>
+      <ul>
+        <li>Credit/Debit Card: 5–7 business days</li>
+        <li>UPI / Net Banking: 1–3 business days</li>
+        <li>BusGo Wallet: Instant</li>
+        <li>EMI: Subject to bank's cancellation policy</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Non-Refundable Cases</h3>
+      <ul>
+        <li>Bookings cancelled within 4 hours of departure</li>
+        <li>No-shows (failing to board the bus)</li>
+        <li>Bookings on routes marked as "Non-Refundable"</li>
+        <li>Fraudulent or suspicious bookings</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Special Circumstances</h3>
+      <p>If your bus is cancelled by the operator or delayed by more than 2 hours, you are entitled to a <strong>full refund regardless of cancellation time</strong>. Contact support with your booking ID for expedited processing.</p>
+    </div>
+  `;
+}
+
+function getTermsContent() {
+  return `
+    <p style="font-size:0.8rem;color:var(--text3);margin-bottom:20px">Last updated: December 1, 2025</p>
+    <div class="legal-section">
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing or using BusGo's website, mobile app, or services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+    </div>
+    <div class="legal-section">
+      <h3>2. User Accounts</h3>
+      <ul>
+        <li>You must be at least 18 years old to create an account</li>
+        <li>You are responsible for maintaining the confidentiality of your account credentials</li>
+        <li>You must provide accurate and truthful registration information</li>
+        <li>BusGo reserves the right to suspend accounts that violate these terms</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>3. Booking & Payment</h3>
+      <ul>
+        <li>All bookings are subject to availability at the time of confirmation</li>
+        <li>Prices shown are inclusive of applicable taxes unless stated otherwise</li>
+        <li>Payment must be made in full at the time of booking</li>
+        <li>BusGo acts as an agent for bus operators and is not responsible for service quality</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>4. Privacy Policy</h3>
+      <p>We collect and process your personal data to provide our services. This includes name, email, phone number, payment information, and travel preferences. We do not sell your data to third parties. Your data is protected using industry-standard encryption.</p>
+    </div>
+    <div class="legal-section">
+      <h3>5. Limitation of Liability</h3>
+      <p>BusGo is a marketplace platform. We are not liable for delays, accidents, or service failures by bus operators. Our maximum liability is limited to the booking amount for the affected trip.</p>
+    </div>
+    <div class="legal-section">
+      <h3>6. Cookies</h3>
+      <p>We use cookies to improve your experience, remember your preferences, and analyse traffic. By using BusGo, you consent to our use of cookies. You can disable cookies in your browser settings, though this may affect functionality.</p>
+    </div>
+    <div class="legal-section">
+      <h3>7. Contact</h3>
+      <p>For legal inquiries: legal@busgo.in<br>BusGo Technologies Pvt. Ltd., 5th Floor, Tech Park, Pune – 411014, Maharashtra, India.</p>
+    </div>
+  `;
+}
+
+// ====================================
+// PAGE INTERACTIVITY
+// ====================================
+function initFAQ() { /* FAQ items rendered with inline onclick */ }
+
+function toggleFAQ(i) {
+  const q = document.getElementById('fq'+i);
+  const a = document.getElementById('fa'+i);
+  if (!q || !a) return;
+  const isOpen = a.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { a.classList.add('open'); q.classList.add('open'); }
+}
+
+function initOfferCopy() { /* Handled inline */ }
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code).catch(() => {});
+  showToast(`✅ Coupon "${code}" copied! Paste it at checkout.`);
+}
+
+function initTrack() { /* handled by doTrack */ }
+
+function doTrack() {
+  const input = document.getElementById('trackInput');
+  if (!input) return;
+  const bid = input.value.trim();
+  const result = document.getElementById('trackResult');
+  if (!bid) { showToast('⚠️ Please enter a booking ID'); return; }
+  result.innerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(45,158,107,0.1),rgba(232,82,26,0.05));border:1px solid rgba(45,158,107,0.2);border-radius:var(--radius);padding:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-weight:700">🚌 Royal Travels — Volvo AC</div><div style="font-size:0.8rem;color:var(--text2);margin-top:4px">Mumbai → Pune · Booking: ${bid}</div></div>
+      <div style="background:rgba(45,158,107,0.2);color:var(--green);padding:6px 14px;border-radius:50px;font-size:0.78rem;font-weight:700">🟢 ON TIME</div>
+    </div>
+    <div style="background:var(--bg2);border-radius:var(--radius);padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">📍</div>
+      <div style="font-weight:700">Currently near Khopoli</div>
+      <div style="font-size:0.82rem;color:var(--text2);margin-top:4px">ETA to Pune: ~1 hour 20 mins</div>
+    </div>
+    <h4 style="margin-bottom:16px;font-size:0.95rem">Route Timeline</h4>
+    <div class="track-timeline">
+      ${[
+        {name:'Mumbai (Dadar)',time:'07:30 AM',done:true,current:false,eta:'Departed'},
+        {name:'Khopoli (Current)',time:'—',done:false,current:true,eta:'Passing now'},
+        {name:'Pune (Shivajinagar)',time:'02:30 PM',done:false,current:false,eta:'~1h 20m away'},
+      ].map((s,i,arr) => `
+        <div class="track-stop">
+          <div class="track-dot-wrap">
+            <div class="track-dot ${s.done?'done':s.current?'current':''}"></div>
+            ${i < arr.length-1 ? `<div class="track-line ${s.done?'done':''}"></div>` : ''}
+          </div>
+          <div class="track-stop-info">
+            <h4>${s.name}</h4>
+            <p>${s.time}</p>
+            <div class="eta">${s.eta}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function submitContact() {
+  const name = document.getElementById('cName')?.value.trim();
+  const email = document.getElementById('cEmail')?.value.trim();
+  if (!name || !email) { showToast('⚠️ Please fill in name and email'); return; }
+  showToast('✅ Message sent! We\'ll get back to you within 4 hours.');
+  closePage();
+}
+</script>
+</body>
+</html>
