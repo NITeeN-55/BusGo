@@ -3,7 +3,7 @@
 
 'use strict';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://busgo-piik.onrender.com/api';
 
 // ── Token helpers ────────────────────────────────────────────
 const Token = {
