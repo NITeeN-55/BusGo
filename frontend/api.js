@@ -5,7 +5,7 @@
 
 const API_BASE = 'https://busgo-piik.onrender.com/api';
 
-fetch("https://busgo-piik.onrender.com/api")
+fetch("https://busgo-piik.onrender.com/api/routes")
 
 // ── Token helpers ────────────────────────────────────────────
 const Token = {
