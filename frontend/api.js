@@ -5,7 +5,6 @@
 
 const API_BASE = 'https://busgo-piik.onrender.com/api';
 
-fetch("https://busgo-piik.onrender.com/api/routes")
 
 // ── Token helpers ────────────────────────────────────────────
 const Token = {
@@ -29,7 +28,7 @@ async function apiFetch(endpoint, options = {}) {
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
   } catch {
-    throw new Error('Cannot reach server. Is the backend running on port 5000?');
+    throw new Error('Cannot reach backend server');
   }
 
   const data = await response.json();
