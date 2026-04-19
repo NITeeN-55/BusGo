@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BusGo – Travel Smart. Travel Safe. | India's #1 Bus Booking Platform</title>
+<meta name="description" content="Book bus tickets online across 2000+ routes in India. Lowest fares, live seat tracking, UPI payments. Mumbai, Delhi, Bangalore, Pune, Chennai & 500+ cities.">
+<meta name="keywords" content="bus booking, online bus ticket, India bus, KSRTC, MSRTC, Volvo bus, sleeper bus, AC bus, UPI payment, BusGo">
+<meta name="author" content="BusGo Technologies Pvt. Ltd.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#e8521a">
+<!-- Open Graph -->
+<meta property="og:title" content="BusGo – Travel Smart. Travel Safe.">
+<meta property="og:description" content="Book bus tickets online across 2000+ routes in India. Lowest fares, UPI payments, live tracking.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://busgo.in">
+<meta property="og:image" content="https://busgo.in/og-image.png">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@BusGoIndia">
+<meta name="twitter:title" content="BusGo – India's #1 Bus Booking Platform">
+<meta name="twitter:description" content="2000+ routes · Lowest fares · UPI payments · Live tracking">
+<!-- PWA Manifest -->
+<link rel="manifest" id="pwaManifest">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
+<!-- Structured Data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"BusGo","url":"https://busgo.in","description":"India's #1 online bus booking platform","applicationCategory":"TravelApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"2000000"}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ===== OTP VERIFICATION MODAL ===== -->
+<div class="otp-overlay" id="otpOverlay" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+  <div class="otp-modal">
+    <div style="font-size:2rem;margin-bottom:12px">📱</div>
+    <div class="otp-title" id="otpTitle">Verify Your Number</div>
+    <div class="otp-subtitle" id="otpSubtitle">Enter the 6-digit OTP sent to your phone number</div>
+    <div class="otp-inputs" role="group" aria-label="OTP input">
+      <input class="otp-input" id="otp1" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 1" oninput="otpInput(this,1)" onkeydown="otpKeydown(event,1)">
+      <input class="otp-input" id="otp2" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 2" oninput="otpInput(this,2)" onkeydown="otpKeydown(event,2)">
+      <input class="otp-input" id="otp3" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 3" oninput="otpInput(this,3)" onkeydown="otpKeydown(event,3)">
+      <input class="otp-input" id="otp4" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 4" oninput="otpInput(this,4)" onkeydown="otpKeydown(event,4)">
+      <input class="otp-input" id="otp5" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 5" oninput="otpInput(this,5)" onkeydown="otpKeydown(event,5)">
+      <input class="otp-input" id="otp6" type="text" inputmode="numeric" maxlength="1" aria-label="OTP digit 6" oninput="otpInput(this,6)" onkeydown="otpKeydown(event,6)">
+    </div>
+    <div class="otp-timer" id="otpTimer">Resend in <span id="otpCountdown">30</span>s</div>
+    <button class="btn-auth-submit" id="otpVerifyBtn" onclick="verifyOTP()" style="width:100%;margin-bottom:12px">Verify OTP →</button>
+    <button class="otp-resend" id="otpResendBtn" onclick="resendOTP()" disabled>Resend OTP</button>
+    <button onclick="closeOTP()" style="display:block;margin:12px auto 0;background:none;border:none;color:var(--text3);font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== REVIEW MODAL ===== -->
+<div class="review-overlay" id="reviewOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+  <div class="review-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="reviewTitle" style="font-size:1.1rem">Rate Your Journey</h3>
+      <button onclick="closeReview()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text3)" aria-label="Close review">✕</button>
+    </div>
+    <div id="reviewTripInfo" style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text2)"></div>
+    <p style="font-size:0.88rem;font-weight:600;text-align:center;margin-bottom:4px">Overall Experience</p>
+    <div class="star-row" id="starRow" role="group" aria-label="Rate overall experience">
+      <button class="star-btn" onclick="setRating(1)" aria-label="1 star">☆</button>
+      <button class="star-btn" onclick="setRating(2)" aria-label="2 stars">☆</button>
+      <button class="star-btn" onclick="setRating(3)" aria-label="3 stars">☆</button>
+      <button class="star-btn" onclick="setRating(4)" aria-label="4 stars">☆</button>
+      <button class="star-btn" onclick="setRating(5)" aria-label="5 stars">☆</button>
+    </div>
+    <div class="review-categories">
+      <div class="review-cat">
+        <label>Punctuality</label>
+        <div class="review-cat-stars" data-cat="punctuality">
+          <span class="cat-star" onclick="setCatRating('punctuality',1)">☆</span>
+          <span class="cat-star" onclick="setCatRating('punctuality',2)">☆</span>
+          <span class="cat-star" onclick="setCatRating('punctuality',3)">☆</span>
+          <span class="cat-star" onclick="setCatRating('punctuality',4)">☆</span>
+          <span class="cat-star" onclick="setCatRating('punctuality',5)">☆</span>
+        </div>
+      </div>
+      <div class="review-cat">
+        <label>Cleanliness</label>
+        <div class="review-cat-stars" data-cat="cleanliness">
+          <span class="cat-star" onclick="setCatRating('cleanliness',1)">☆</span>
+          <span class="cat-star" onclick="setCatRating('cleanliness',2)">☆</span>
+          <span class="cat-star" onclick="setCatRating('cleanliness',3)">☆</span>
+          <span class="cat-star" onclick="setCatRating('cleanliness',4)">☆</span>
+          <span class="cat-star" onclick="setCatRating('cleanliness',5)">☆</span>
+        </div>
+      </div>
+      <div class="review-cat">
+        <label>Driver Behaviour</label>
+        <div class="review-cat-stars" data-cat="driver">
+          <span class="cat-star" onclick="setCatRating('driver',1)">☆</span>
+          <span class="cat-star" onclick="setCatRating('driver',2)">☆</span>
+          <span class="cat-star" onclick="setCatRating('driver',3)">☆</span>
+          <span class="cat-star" onclick="setCatRating('driver',4)">☆</span>
+          <span class="cat-star" onclick="setCatRating('driver',5)">☆</span>
+        </div>
+      </div>
+      <div class="review-cat">
+        <label>Seat Comfort</label>
+        <div class="review-cat-stars" data-cat="comfort">
+          <span class="cat-star" onclick="setCatRating('comfort',1)">☆</span>
+          <span class="cat-star" onclick="setCatRating('comfort',2)">☆</span>
+          <span class="cat-star" onclick="setCatRating('comfort',3)">☆</span>
+          <span class="cat-star" onclick="setCatRating('comfort',4)">☆</span>
+          <span class="cat-star" onclick="setCatRating('comfort',5)">☆</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-field" style="margin-bottom:16px">
+      <textarea id="reviewText" rows="3" placeholder=" " style="width:100%;padding:11px 14px;border-radius:var(--radius-sm);background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:vertical;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <label style="position:absolute;pointer-events:none;font-size:0.85rem;color:var(--text3)">Share your experience (optional)</label>
+    </div>
+    <div style="display:flex;gap:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text2);cursor:pointer">
+        <input type="checkbox" id="reviewAnon" style="width:16px;height:16px;accent-color:var(--accent)"> Submit anonymously
+      </label>
+    </div>
+    <button class="btn-search" style="width:100%;margin-top:16px" onclick="submitReview()" id="reviewSubmitBtn">Submit Review →</button>
+  </div>
+</div>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <div class="nav-logo" onclick="goHome()">🚌 <span>Bus</span>Go</div>
+  <ul class="nav-links">
+    <li><a onclick="goHome()">Home</a></li>
+    <li><a onclick="openPage('bookings')">My Bookings</a></li>
+    <li><a onclick="openPage('offers')">Offers</a></li>
+    <li><a onclick="openPage('help')">Support</a></li>
+  </ul>
+  <div class="nav-right">
+    <!-- Wallet pill (logged in only) -->
+    <div id="walletPill" class="wallet-pill" style="display:none" onclick="openWallet()">
+      <span>💚</span><span id="walletAmt">₹0</span>
+    </div>
+    <!-- Loyalty tier (logged in only) -->
+    <div id="loyaltyPill" class="loyalty-pill bronze" style="display:none" onclick="openRewards()">
+      <span>🥉</span><span id="loyaltyTierLabel">Bronze</span>
+    </div>
+    <!-- Notification bell -->
+    <div class="notif-wrap" id="notifWrap">
+      <button class="btn-dark notif-bell" onclick="toggleNotifPanel()" id="notifBtn">🔔
+        <span class="notif-badge" id="notifBadge">3</span>
+      </button>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">
+          <h4>🔔 Notifications</h4>
+          <button class="notif-clear" onclick="clearNotifs()">Clear all</button>
+        </div>
+        <div id="notifList"></div>
+      </div>
+    </div>
+    <button class="btn-dark" onclick="toggleDark()" id="darkBtn">🌙</button>
+    <button class="btn-nav" id="loginBtn" onclick="openAuth('login')">Login</button>
+    <div class="user-avatar-wrap" id="userAvatarWrap" style="display:none">
+      <div class="user-avatar" id="userAvatar" onclick="toggleUserDD()">A</div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+          <div class="uname" id="ddName">User</div>
+          <div class="uemail" id="ddEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="443137213604263137232b6a2d2a">[email&#160;protected]</a></div>
+        </div>
+        <div class="user-dd-item" onclick="openPage('bookings');toggleUserDD()">🎫 My Bookings</div>
+        <div class="user-dd-item" onclick="openPage('refundRequests');toggleUserDD()">↩️ My Refunds</div>
+        <div class="user-dd-item" onclick="openPage('track');toggleUserDD()">📍 Track Bus</div>
+        <div class="user-dd-item" onclick="openWallet();toggleUserDD()">💚 Wallet</div>
+        <div class="user-dd-item" onclick="openRewards();toggleUserDD()">⭐ Rewards</div>
+        <div class="user-dd-item" onclick="openPage('referral');toggleUserDD()">🎁 Refer &amp; Earn</div>
+        <div class="user-dd-item" onclick="openPage('offers');toggleUserDD()">🏷️ Offers &amp; Deals</div>
+        <div class="user-dd-item" onclick="openPage('priceAlerts');toggleUserDD()">🔔 Price Alerts</div>
+        <div class="user-dd-item" onclick="openPage('help');toggleUserDD()">❓ Help Center</div>
+        <div class="user-dd-item" onclick="openPage('admin');toggleUserDD()">⚙️ Admin Panel</div>
+        <div class="user-dd-item" onclick="openPage('transactions');toggleUserDD()">💸 Payment History</div>
+        <div class="user-dd-item danger" onclick="logout()">🚪 Logout</div>
+      </div>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="goHome();toggleMenu()">🏠 Home</a>
+  <a onclick="openPage('bookings');toggleMenu()">🎫 My Bookings</a>
+  <a onclick="openPage('refundRequests');toggleMenu()">↩️ My Refunds</a>
+  <a onclick="openPage('offers');toggleMenu()">🏷️ Offers & Deals</a>
+  <a onclick="openPage('track');toggleMenu()">📍 Track Bus</a>
+  <a onclick="openPage('wishlist');toggleMenu()">❤️ Saved Routes</a>
+  <a onclick="openPage('priceAlerts');toggleMenu()">🔔 Price Alerts</a>
+  <a onclick="openWallet();toggleMenu()">💚 Wallet</a>
+  <a onclick="openRewards();toggleMenu()">⭐ Loyalty Rewards</a>
+  <a onclick="openPage('referral');toggleMenu()">🎁 Refer & Earn</a>
+  <a onclick="openPage('help');toggleMenu()">❓ Support</a>
+  <button class="btn-nav" id="mobileLoginBtn" style="width:fit-content;margin-top:8px" onclick="openAuth('login');toggleMenu()">Login / Sign Up</button>
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div class="payment-loading" id="payLoader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Processing payment…</div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <span class="toast-icon">✓</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="home-page" role="main" id="main-content">
+  <section id="hero">
+    <div class="hero-bg"><div class="hero-grid"></div></div>
+    <div class="hero-bus">🚌</div>
+    <div class="hero-content">
+      <div class="hero-badge">India's #1 Bus Booking Platform</div>
+      <h1 class="hero-h1">Travel <em>Smart.</em><br>Travel Safe.</h1>
+      <p class="hero-sub">Book from 2000+ routes across India. Lowest fares, live seat tracking.</p>
+      <div class="search-card">
+        <div class="search-row">
+          <div class="field-wrap">
+            <label>From</label>
+            <input type="text" id="fromCity" placeholder="e.g. Mumbai" autocomplete="off" oninput="showSuggestions('from',this.value)" onfocus="showSuggestions('from',this.value)">
+            <div class="dropdown-list" id="fromDropdown"></div>
+          </div>
+          <button class="swap-btn" onclick="swapCities()">⇄</button>
+          <div class="field-wrap">
+            <label>To</label>
+            <input type="text" id="toCity" placeholder="e.g. Pune" autocomplete="off" oninput="showSuggestions('to',this.value)" onfocus="showSuggestions('to',this.value)">
+            <div class="dropdown-list" id="toDropdown"></div>
+          </div>
+          <div class="field-wrap">
+            <label>Date</label>
+            <input type="date" id="travelDate">
+          </div>
+          <div class="field-wrap">
+            <label>Bus Type</label>
+            <select id="busTypeFilter">
+              <option value="">All Types</option>
+              <option>AC</option>
+              <option>Non-AC</option>
+              <option>Sleeper</option>
+              <option>Volvo</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <button class="btn-search" onclick="searchBuses()">🔍 Search Buses</button>
+          <div style="font-size:0.8rem;color:var(--text2)">Popular:
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Mumbai','Pune')">Mumbai→Pune</span> ·
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Delhi','Jaipur')">Delhi→Jaipur</span> ·
+            <span style="color:var(--accent);cursor:pointer" onclick="quickSearch('Bangalore','Chennai')">Bangalore→Chennai</span>
+          </div>
+        </div>
+        <div class="search-chips">
+          <span class="search-chip" onclick="quickSearch('Mumbai','Goa')">🏖️ Mumbai→Goa</span>
+          <span class="search-chip" onclick="quickSearch('Pune','Nagpur')">🟠 Pune→Nagpur</span>
+          <span class="search-chip" onclick="quickSearch('Hyderabad','Bangalore')">🔥 Trending</span>
+          <span class="search-chip" onclick="openPage('offers')">⚡ Flash Deals</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DEALS TICKER ===== -->
+  <div class="deals-ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- ===== LIVE STATS ===== -->
+  <section id="live-stats">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number"><span class="count-up" data-target="10000000">0</span><span>+</span></div>
+        <div class="stat-label">Happy Passengers</div>
+        <div class="stat-trend">↑ 24% this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="count-up" data-target="2000">0</span><span>+</span></div>
+        <div class="stat-label">Active Routes</div>
+        <div class="stat-trend">↑ 12 new this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="count-up" data-target="500">0</span><span>+</span></div>
+        <div class="stat-label">Cities Connected</div>
+        <div class="stat-trend">Across 28 states</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number"><span class="count-up" data-target="98">0</span><span>%</span></div>
+        <div class="stat-label">On-Time Rate</div>
+        <div class="stat-trend">⭐ 4.8 avg rating</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="popular">
+    <div class="section-header">
+      <h2>Popular Routes</h2>
+      <p>Most booked routes across India</p>
+    </div>
+    <div class="routes-grid" id="popularRoutes"></div>
+  </section>
+
+  <!-- ===== FEATURES SECTION ===== -->
+  <section id="features">
+    <div class="section-header">
+      <h2>Everything You Need</h2>
+      <p>Built for modern Indian travellers</p>
+    </div>
+    <div class="features-grid" id="featuresGrid"></div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials">
+    <div class="section-header">
+      <h2>Loved by Millions</h2>
+      <p>What our passengers say</p>
+    </div>
+    <div style="overflow:hidden">
+      <div class="testimonial-track" id="testimonialTrack"></div>
+    </div>
+  </section>
+
+  <!-- ===== APP DOWNLOAD BANNER ===== -->
+  <section id="app-banner">
+    <div class="app-banner-text">
+      <h2>Travel Smarter.<br>Get the BusGo App.</h2>
+      <p>Book tickets, track buses live, manage bookings — all in your pocket. Available on iOS and Android.</p>
+      <div class="app-store-btns">
+        <div class="app-store-btn" onclick="showToast('📱 App Store coming soon!')">
+          <span class="store-icon">🍎</span>
+          <div class="store-info"><div class="store-label">Download on the</div><div class="store-name">App Store</div></div>
+        </div>
+        <div class="app-store-btn" onclick="showToast('📱 Play Store coming soon!')">
+          <span class="store-icon">▶️</span>
+          <div class="store-info"><div class="store-label">Get it on</div><div class="store-name">Google Play</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="app-mockup">🚌</div>
+  </section>
+</div>
+
+<!-- ===== RESULTS PAGE ===== -->
+<div id="results-page">
+  <div class="results-header">
+    <button class="btn-back" onclick="goHome()">← Back</button>
+    <h2 id="resultsTitle">Buses Found</h2>
+    <div class="results-meta" id="resultsMeta"></div>
+  </div>
+  <div class="results-body">
+    <aside class="sidebar">
+      <h3>🎛 Filters</h3>
+      <div class="filter-group">
+        <h4>Sort By</h4>
+        <select class="sort-select" id="sortBy" onchange="applyFilters()">
+          <option value="price">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="departure">Departure Time</option>
+          <option value="duration">Duration</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <h4>Price Range</h4>
+        <input type="range" class="range-track" id="priceRange" min="100" max="3000" value="3000" oninput="updatePrice(this.value)">
+        <div class="range-labels"><span>₹100</span><span id="priceLabel">₹3000</span></div>
+      </div>
+      <div class="filter-group">
+        <h4>Departure Time</h4>
+        <div class="time-filter">
+          <div class="time-chip active" data-time="all" onclick="filterTime(this,'all')">All</div>
+          <div class="time-chip" data-time="morning" onclick="filterTime(this,'morning')">🌅 Morning</div>
+          <div class="time-chip" data-time="afternoon" onclick="filterTime(this,'afternoon')">☀️ Afternoon</div>
+          <div class="time-chip" data-time="evening" onclick="filterTime(this,'evening')">🌆 Evening</div>
+          <div class="time-chip" data-time="night" onclick="filterTime(this,'night')">🌙 Night</div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Bus Type</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox"><input type="checkbox" value="AC" onchange="applyFilters()"><span class="checkmark"></span>AC</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Non-AC" onchange="applyFilters()"><span class="checkmark"></span>Non-AC</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Sleeper" onchange="applyFilters()"><span class="checkmark"></span>Sleeper</label>
+          <label class="filter-checkbox"><input type="checkbox" value="Volvo" onchange="applyFilters()"><span class="checkmark"></span>Volvo</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Minimum Rating</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox"><input type="radio" name="rating" value="0" checked onchange="applyFilters()"><span class="checkmark"></span>All</label>
+          <label class="filter-checkbox"><input type="radio" name="rating" value="4" onchange="applyFilters()"><span class="checkmark"></span>⭐ 4+ Stars</label>
+          <label class="filter-checkbox"><input type="radio" name="rating" value="4.5" onchange="applyFilters()"><span class="checkmark"></span>⭐ 4.5+ Stars</label>
+        </div>
+      </div>
+    </aside>
+    <div>
+      <div class="bus-list" id="busList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SEAT PAGE ===== -->
+<div id="seat-page">
+  <div class="seat-page-body">
+    <button class="btn-back" onclick="goResults()">← Back to Buses</button>
+    <div class="step-bar" id="stepBar"></div>
+    <div class="seat-layout-wrap">
+      <div class="seat-panel">
+        <h3 id="seatPanelTitle">Select Your Seats</h3>
+        <div class="seat-bus-top">
+          <div class="driver-area"><div class="driver-seat">🚗</div></div>
+          <div class="seat-grid" id="seatGrid"></div>
+        </div>
+        <div class="seat-legend">
+          <div class="legend-item"><div class="legend-dot available"></div>Available</div>
+          <div class="legend-item"><div class="legend-dot booked"></div>Booked</div>
+          <div class="legend-item"><div class="legend-dot selected"></div>Selected</div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text2);margin-top:12px">Max 6 seats per booking. Click to select.</p>
+      </div>
+      <div>
+        <div class="booking-summary">
+          <h3>Booking Summary</h3>
+          <div class="summary-bus-info">
+            <div class="summary-row"><span class="key">Bus</span><span class="val" id="sumBusName">-</span></div>
+            <div class="summary-row"><span class="key">Route</span><span class="val" id="sumRoute">-</span></div>
+            <div class="summary-row"><span class="key">Date</span><span class="val" id="sumDate">-</span></div>
+            <div class="summary-row"><span class="key">Departure</span><span class="val" id="sumDep">-</span></div>
+          </div>
+          <div class="summary-row"><span class="key">Selected Seats</span></div>
+          <div class="selected-seats-chips" id="selectedChips"><span style="color:var(--text3);font-size:0.82rem">No seats selected</span></div>
+          <div class="coupon-row">
+            <div class="coupon-input-wrap">
+              <input type="text" id="couponInput" placeholder="COUPON CODE">
+              <button class="btn-apply" onclick="applyCoupon()">Apply</button>
+            </div>
+            <div class="coupon-success" id="couponSuccess">🎉 Coupon applied! ₹<span id="discountAmt">0</span> off</div>
+          </div>
+          <div class="summary-row"><span class="key">Price per seat</span><span class="val" id="sumPrice">-</span></div>
+          <div class="summary-row"><span class="key">Seats</span><span class="val" id="sumSeats">0</span></div>
+          <div class="summary-row" id="discountRow" style="display:none"><span class="key" style="color:var(--green)">Discount</span><span class="val" style="color:var(--green)" id="discountDisplay">-₹0</span></div>
+          <div class="total-row"><span>Total</span><span class="total-amt" id="totalAmt">₹0</span></div>
+          <button class="btn-proceed" id="proceedBtn" disabled onclick="goDetails()">Proceed to Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETAILS PAGE ===== -->
+<div id="details-page">
+  <div class="details-body">
+    <button class="btn-back" onclick="goSeat()">← Back to Seats</button>
+    <div class="step-bar" id="stepBar2"></div>
+    <div class="form-card">
+      <h3>👤 Passenger Details</h3>
+      <div class="form-grid">
+        <div class="form-field" id="ff-name">
+          <input type="text" id="pName" placeholder=" ">
+          <label>Full Name *</label>
+          <div class="err">Please enter your full name</div>
+        </div>
+        <div class="form-field" id="ff-phone">
+          <input type="tel" id="pPhone" placeholder=" ">
+          <label>Phone Number *</label>
+          <div class="err">Enter valid 10-digit number</div>
+        </div>
+        <div class="form-field" id="ff-email">
+          <input type="email" id="pEmail" placeholder=" ">
+          <label>Email Address *</label>
+          <div class="err">Enter valid email address</div>
+        </div>
+        <div class="form-field" id="ff-age">
+          <input type="number" id="pAge" placeholder=" " min="5" max="100">
+          <label>Age *</label>
+          <div class="err">Age must be between 5 and 100</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-card">
+      <h3>💳 Payment Method</h3>
+      <div class="payment-methods">
+        <div class="pay-method active" onclick="selectPay(this,'card')"><span class="icon">💳</span><span class="name">Card</span></div>
+        <div class="pay-method" onclick="selectPay(this,'upi')"><span class="icon">📱</span><span class="name">UPI</span></div>
+        <div class="pay-method" onclick="selectPay(this,'wallet')"><span class="icon">👛</span><span class="name">Wallet</span></div>
+      </div>
+      <div id="cardFields" style="margin-top:20px">
+        <div class="form-grid">
+          <div class="form-field" id="ff-card" style="grid-column:1/-1">
+            <input type="text" id="pCard" placeholder=" " maxlength="19" autocomplete="cc-number">
+            <label>Card Number</label>
+            <div class="err">Enter a valid 15–16 digit card number</div>
+          </div>
+          <div class="form-field">
+            <input type="text" id="pExpiry" placeholder=" " maxlength="5" autocomplete="cc-exp">
+            <label>Expiry (MM/YY)</label>
+          </div>
+          <div class="form-field">
+            <input type="password" id="pCVV" placeholder=" " maxlength="4" autocomplete="cc-csc">
+            <label>CVV</label>
+          </div>
+        </div>
+      </div>
+      <div id="walletField" style="margin-top:20px;display:none">
+        <div style="background:linear-gradient(135deg,rgba(45,158,107,0.08),rgba(45,158,107,0.03));border:1px solid rgba(45,158,107,0.2);border-radius:var(--radius);padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span style="font-size:0.85rem;font-weight:700">💚 BusGo Wallet Balance</span>
+            <span style="font-size:1.2rem;font-weight:800;color:var(--green);font-family:'Syne',sans-serif" id="walletBalanceDisplay">₹0</span>
+          </div>
+          <div style="font-size:0.8rem" id="walletPayNote"></div>
+          <button onclick="openWallet()" style="margin-top:10px;padding:6px 14px;border-radius:50px;background:rgba(45,158,107,0.12);border:1px solid rgba(45,158,107,0.25);color:var(--green);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer">+ Add Money to Wallet</button>
+        </div>
+      </div>
+      <div id="upiField" style="margin-top:20px;display:none">
+        <!-- UPI App Quick-Launch -->
+        <p style="font-size:0.78rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Pay instantly via UPI App</p>
+        <div class="upi-apps-grid">
+          <button class="upi-app-btn" id="upiAppGpay" onclick="selectUPIApp('gpay')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#fff"/><path fill="#4285F4" d="M35.3 24.5c0-.8-.1-1.5-.2-2.2H24.1v4.2h6.3c-.3 1.4-1.1 2.6-2.3 3.4v2.8h3.7c2.2-2 3.5-5 3.5-8.2z"/><path fill="#34A853" d="M24.1 36c3.1 0 5.7-1 7.6-2.8l-3.7-2.8c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7h-3.8v2.9C15.7 33.7 19.6 36 24.1 36z"/><path fill="#FBBC05" d="M17.7 26.8c-.2-.7-.4-1.4-.4-2.3 0-.8.1-1.6.4-2.3v-2.9h-3.8c-.8 1.5-1.2 3.3-1.2 5.2s.4 3.7 1.2 5.2l3.8-2.9z"/><path fill="#EA4335" d="M24.1 17.5c1.7 0 3.2.6 4.4 1.7l3.3-3.3C29.8 14 27.2 13 24.1 13c-4.5 0-8.4 2.5-10.2 6.3l3.8 2.9c.9-2.7 3.4-4.7 6.4-4.7z"/></svg></span>
+            <span>Google Pay</span>
+          </button>
+          <button class="upi-app-btn" id="upiAppPhonepe" onclick="selectUPIApp('phonepe')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5F259F"/><path fill="#fff" d="M17 13h8c4.4 0 8 3.6 8 8s-3.6 8-8 8h-4v8h-4V13zm4 4v8h4c2.2 0 4-1.8 4-4s-1.8-4-4-4h-4z"/><path fill="#CBB0FF" d="M29 29l4 7h-4.5l-3.5-7h4z"/></svg></span>
+            <span>PhonePe</span>
+          </button>
+          <button class="upi-app-btn" id="upiAppPaytm" onclick="selectUPIApp('paytm')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00BAF2"/><rect x="10" y="19" width="28" height="10" rx="2" fill="#fff"/><text x="24" y="27.5" text-anchor="middle" fill="#00BAF2" font-size="8.5" font-weight="800" font-family="Arial,sans-serif">paytm</text></svg></span>
+            <span>Paytm</span>
+          </button>
+          <button class="upi-app-btn" id="upiAppBhim" onclick="selectUPIApp('bhim')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#fff"/><rect x="0" y="0" width="48" height="16" rx="10" fill="#FF9933"/><rect x="0" y="16" width="48" height="16" fill="#fff"/><rect x="0" y="32" width="48" height="16" rx="10" fill="#138808" rx="0"/><rect x="0" y="38" width="48" height="10" rx="0" ry="0" fill="#138808"/><rect x="0" y="32" width="48" height="16" fill="#138808"/><rect x="0" y="38" width="48" height="10" rx="10" fill="#138808"/><circle cx="24" cy="24" r="7" fill="none" stroke="#000080" stroke-width="1.5"/><circle cx="24" cy="24" r="1.5" fill="#000080"/><text x="24" y="40" text-anchor="middle" fill="#fff" font-size="7" font-weight="900" font-family="Arial,sans-serif">BHIM</text><line x1="24" y1="17" x2="24" y2="31" stroke="#000080" stroke-width="1"/><line x1="17" y1="24" x2="31" y2="24" stroke="#000080" stroke-width="1"/></svg></span>
+            <span>BHIM</span>
+          </button>
+          <button class="upi-app-btn" id="upiAppAmazon" onclick="selectUPIApp('amazon')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#232F3E"/><text x="24" y="22" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Arial,sans-serif">amazon</text><text x="24" y="31" text-anchor="middle" fill="#FF9900" font-size="7" font-weight="700" font-family="Arial,sans-serif">pay</text><path d="M14 35 Q24 40 34 35" fill="none" stroke="#FF9900" stroke-width="2.5" stroke-linecap="round"/><polygon points="33,33 35,35 33,37" fill="#FF9900"/></svg></span>
+            <span>Amazon Pay</span>
+          </button>
+          <button class="upi-app-btn" id="upiAppOther" onclick="selectUPIApp('other')">
+            <span class="upi-app-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0E3F6E"/><rect x="10" y="12" width="28" height="4" rx="2" fill="#FF6B00"/><rect x="10" y="22" width="28" height="12" rx="2" fill="#fff"/><text x="24" y="31" text-anchor="middle" fill="#0E3F6E" font-size="7.5" font-weight="900" font-family="Arial,sans-serif">UPI</text><rect x="10" y="36" width="28" height="4" rx="2" fill="#138808"/></svg></span>
+            <span>Other App</span>
+          </button>
+        </div>
+        <!-- QR Code option -->
+        <button onclick="openUPIQRPanel()" style="width:100%;padding:11px;border-radius:var(--radius-sm);background:var(--bg);border:1.5px dashed var(--accent);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:14px" onmouseover="this.style.background='rgba(232,82,26,0.06)'" onmouseout="this.style.background='var(--bg)'">
+          🔲 Scan QR Code Instead
+        </button>
+        <div class="upi-or-divider"><span>or enter UPI ID manually</span></div>
+        <!-- UPI ID Input -->
+        <div class="upi-id-row">
+          <div class="form-field" style="flex:1;margin:0">
+            <input type="text" id="pUPI" placeholder=" " oninput="resetUPIVerify()">
+            <label>UPI ID (e.g. name@upi)</label>
+          </div>
+          <button class="btn-verify-upi" onclick="verifyUPIId()">Verify</button>
+        </div>
+        <div class="upi-id-verified" id="upiVerifiedBadge">✅ UPI ID verified successfully</div>
+      </div>
+      <div style="margin-top:20px">
+        <div class="summary-row"><span class="key">Total Amount</span><span class="val" id="detailTotal" style="color:var(--accent);font-size:1.2rem">-</span></div>
+        <button class="btn-pay" onclick="processPayment()">Pay Now 🔒</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM PAGE ===== -->
+<div id="confirm-page">
+  <div class="confetti-wrap" id="confettiWrap"></div>
+  <div class="confirm-body">
+    <div class="confirm-hero">
+      <div class="confirm-icon">🎉</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your ticket has been booked successfully. Safe travels!</p>
+    </div>
+    <div class="ticket-card">
+      <div class="ticket-header">
+        <div class="logo">🚌 BusGo</div>
+        <div class="ticket-id">Booking ID: <span id="ticketId">-</span></div>
+      </div>
+      <div class="ticket-body">
+        <div class="ticket-route">
+          <div class="ticket-city">
+            <div class="city-name" id="tcFrom">-</div>
+            <div class="city-time" id="tcDep">-</div>
+          </div>
+          <div class="ticket-arrow">→</div>
+          <div class="ticket-city">
+            <div class="city-name" id="tcTo">-</div>
+            <div class="city-time" id="tcArr">-</div>
+          </div>
+        </div>
+        <div class="ticket-grid">
+          <div class="ticket-field"><div class="key">Passenger</div><div class="val" id="tcName">-</div></div>
+          <div class="ticket-field"><div class="key">Bus</div><div class="val" id="tcBus">-</div></div>
+          <div class="ticket-field"><div class="key">Seats</div><div class="val" id="tcSeats">-</div></div>
+          <div class="ticket-field"><div class="key">Date</div><div class="val" id="tcDate">-</div></div>
+          <div class="ticket-field"><div class="key">Phone</div><div class="val" id="tcPhone">-</div></div>
+          <div class="ticket-field"><div class="key">Amount Paid</div><div class="val" id="tcAmount" style="color:var(--accent)">-</div></div>
+        </div>
+        <div class="ticket-qr">
+          <div class="qr-placeholder" id="qrCode">🔲 QR Code</div>
+        </div>
+      </div>
+    </div>
+    <div class="ticket-actions">
+      <button class="btn-pdf" id="pdfDownloadBtn" onclick="downloadTicketPDF()" aria-label="Download ticket as PDF">
+        📥 Download Ticket
+      </button>
+      <button class="btn-print" onclick="window.print()" aria-label="Print ticket">🖨 Print</button>
+      <button class="btn-invoice" onclick="openReviewModal()" aria-label="Rate your journey" style="padding:12px 18px">⭐ Rate Journey</button>
+    </div>
+    <div class="download-progress" id="dlProgress" role="status" aria-live="polite">
+      <span>Generating PDF…</span>
+      <div class="dl-bar-wrap"><div class="dl-bar" id="dlBar"></div></div>
+      <span id="dlPct">0%</span>
+    </div>
+    <div class="carbon-card" id="carbonCard" style="display:none">
+      <h4>🌱 Your Green Impact</h4>
+      <div class="carbon-metric"><span>CO₂ saved vs flying</span><span class="carbon-val" id="carbonSaved">—</span></div>
+      <div class="carbon-metric"><span>CO₂ saved vs driving</span><span class="carbon-val" id="carbonDriving">—</span></div>
+      <div class="carbon-metric"><span>Trees equivalent</span><span class="carbon-val" id="carbonTrees">—</span></div>
+      <div class="carbon-vs-fly" id="carbonMsg"></div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <p style="font-size:0.8rem;color:var(--text2);margin-bottom:10px">Share your booking</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="share-btn wa" onclick="shareTrip('whatsapp')">📱 WhatsApp</button>
+        <button class="share-btn tw" onclick="shareTrip('twitter')">𝕏 Share</button>
+        <button class="share-btn cp" onclick="shareTrip('copy')">📋 Copy Link</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-search" onclick="goHome()">Book Another Ticket</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UPI PAYMENT GATEWAY MODAL ===== -->
+<div class="upi-modal-overlay" id="upiModalOverlay">
+  <div class="upi-modal" id="upiModal">
+    <div class="upi-modal-head">
+      <h3>🔒 Secure UPI Payment</h3>
+      <button class="upi-modal-close" onclick="closeUPIModal()">✕</button>
+    </div>
+    <div class="upi-modal-body">
+      <!-- Amount Display -->
+      <div class="pay-amount-display">
+        <div class="pay-label">Amount to Pay</div>
+        <div class="pay-value" id="modalAmount">₹0</div>
+        <div class="pay-ref" id="modalRef">Ref: —</div>
+      </div>
+
+      <!-- Payment Tabs: QR / UPI ID / Apps -->
+      <div class="pay-tabs">
+        <button class="pay-tab active" onclick="switchPayTab('qr',this)">🔲 QR Code</button>
+        <button class="pay-tab" onclick="switchPayTab('apps',this)">📱 UPI Apps</button>
+        <button class="pay-tab" onclick="switchPayTab('id',this)">✏️ UPI ID</button>
+      </div>
+
+      <!-- TAB: QR Code -->
+      <div class="pay-tab-content active" id="tabQR">
+        <div class="qr-container">
+          <div class="qr-code-wrap" id="modalQRCode"></div>
+          <div class="qr-label">Scan with any UPI App</div>
+          <div class="qr-hint">Open Google Pay / PhonePe / Paytm → Scan QR</div>
+          <div class="qr-upi-apps-row" title="Compatible with all UPI apps">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#fff"/><path fill="#4285F4" d="M35.3 24.5c0-.8-.1-1.5-.2-2.2H24.1v4.2h6.3c-.3 1.4-1.1 2.6-2.3 3.4v2.8h3.7c2.2-2 3.5-5 3.5-8.2z"/><path fill="#34A853" d="M24.1 36c3.1 0 5.7-1 7.6-2.8l-3.7-2.8c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7h-3.8v2.9C15.7 33.7 19.6 36 24.1 36z"/><path fill="#FBBC05" d="M17.7 26.8c-.2-.7-.4-1.4-.4-2.3 0-.8.1-1.6.4-2.3v-2.9h-3.8c-.8 1.5-1.2 3.3-1.2 5.2s.4 3.7 1.2 5.2l3.8-2.9z"/><path fill="#EA4335" d="M24.1 17.5c1.7 0 3.2.6 4.4 1.7l3.3-3.3C29.8 14 27.2 13 24.1 13c-4.5 0-8.4 2.5-10.2 6.3l3.8 2.9c.9-2.7 3.4-4.7 6.4-4.7z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5F259F"/><path fill="#fff" d="M17 13h8c4.4 0 8 3.6 8 8s-3.6 8-8 8h-4v8h-4V13zm4 4v8h4c2.2 0 4-1.8 4-4s-1.8-4-4-4h-4z"/><path fill="#CBB0FF" d="M29 29l4 7h-4.5l-3.5-7h4z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00BAF2"/><rect x="10" y="19" width="28" height="10" rx="2" fill="#fff"/><text x="24" y="27.5" text-anchor="middle" fill="#00BAF2" font-size="8.5" font-weight="800" font-family="Arial,sans-serif">paytm</text></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#232F3E"/><text x="24" y="22" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Arial,sans-serif">amazon</text><text x="24" y="31" text-anchor="middle" fill="#FF9900" font-size="7" font-weight="700" font-family="Arial,sans-serif">pay</text><path d="M14 35 Q24 40 34 35" fill="none" stroke="#FF9900" stroke-width="2.5" stroke-linecap="round"/><polygon points="33,33 35,35 33,37" fill="#FF9900"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0E3F6E"/><rect x="10" y="12" width="28" height="4" rx="2" fill="#FF6B00"/><rect x="10" y="22" width="28" height="12" rx="2" fill="#fff"/><text x="24" y="31" text-anchor="middle" fill="#0E3F6E" font-size="7.5" font-weight="900" font-family="Arial,sans-serif">UPI</text><rect x="10" y="36" width="28" height="4" rx="2" fill="#138808"/></svg>
+          </div>
+        </div>
+        <!-- Countdown timer -->
+        <div class="payment-countdown">
+          <div>QR expires in</div>
+          <div class="timer" id="qrTimer">10:00</div>
+          <div class="countdown-bar-wrap"><div class="countdown-bar" id="countdownBar" style="width:100%"></div></div>
+        </div>
+      </div>
+
+      <!-- TAB: UPI Apps Deep-link -->
+      <div class="pay-tab-content" id="tabApps">
+        <p style="font-size:0.82rem;color:var(--text2);margin-bottom:14px;text-align:center">Choose your preferred UPI app to pay instantly</p>
+        <div class="upi-deeplink-grid">
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('gpay')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#fff" stroke="#e8e8e8" stroke-width="1.5"/><path fill="#4285F4" d="M35.3 24.5c0-.8-.1-1.5-.2-2.2H24.1v4.2h6.3c-.3 1.4-1.1 2.6-2.3 3.4v2.8h3.7c2.2-2 3.5-5 3.5-8.2z"/><path fill="#34A853" d="M24.1 36c3.1 0 5.7-1 7.6-2.8l-3.7-2.8c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7h-3.8v2.9C15.7 33.7 19.6 36 24.1 36z"/><path fill="#FBBC05" d="M17.7 26.8c-.2-.7-.4-1.4-.4-2.3 0-.8.1-1.6.4-2.3v-2.9h-3.8c-.8 1.5-1.2 3.3-1.2 5.2s.4 3.7 1.2 5.2l3.8-2.9z"/><path fill="#EA4335" d="M24.1 17.5c1.7 0 3.2.6 4.4 1.7l3.3-3.3C29.8 14 27.2 13 24.1 13c-4.5 0-8.4 2.5-10.2 6.3l3.8 2.9c.9-2.7 3.4-4.7 6.4-4.7z"/></svg></span>
+            <div class="app-info"><div class="app-name">Google Pay</div><div class="app-tag">Tap to open</div></div>
+          </button>
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('phonepe')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#5F259F"/><path fill="#fff" d="M17 13h8c4.4 0 8 3.6 8 8s-3.6 8-8 8h-4v8h-4V13zm4 4v8h4c2.2 0 4-1.8 4-4s-1.8-4-4-4h-4z"/><path fill="#CBB0FF" d="M29 29l4 7h-4.5l-3.5-7h4z"/></svg></span>
+            <div class="app-info"><div class="app-name">PhonePe</div><div class="app-tag">Tap to open</div></div>
+          </button>
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('paytm')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#00BAF2"/><rect x="10" y="19" width="28" height="10" rx="2" fill="#fff"/><text x="24" y="27.5" text-anchor="middle" fill="#00BAF2" font-size="8.5" font-weight="800" font-family="Arial,sans-serif">paytm</text></svg></span>
+            <div class="app-info"><div class="app-name">Paytm</div><div class="app-tag">Tap to open</div></div>
+          </button>
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('bhim')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#fff" stroke="#e8e8e8" stroke-width="1.5"/><rect x="0" y="0" width="48" height="16" rx="10" fill="#FF9933"/><rect x="0" y="6" width="48" height="10" fill="#FF9933"/><rect x="0" y="16" width="48" height="16" fill="#fff"/><rect x="0" y="32" width="48" height="16" fill="#138808"/><rect x="0" y="32" width="48" height="10" fill="#138808"/><circle cx="24" cy="24" r="5.5" fill="none" stroke="#000080" stroke-width="1.5"/><circle cx="24" cy="24" r="1.2" fill="#000080"/><line x1="24" y1="18.5" x2="24" y2="29.5" stroke="#000080" stroke-width="1"/><line x1="18.5" y1="24" x2="29.5" y2="24" stroke="#000080" stroke-width="1"/><text x="24" y="44" text-anchor="middle" fill="#fff" font-size="6.5" font-weight="900" font-family="Arial,sans-serif" letter-spacing="0.5">BHIM</text></svg></span>
+            <div class="app-info"><div class="app-name">BHIM UPI</div><div class="app-tag">Tap to open</div></div>
+          </button>
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('amazon')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#232F3E"/><text x="24" y="21" text-anchor="middle" fill="#fff" font-size="7.5" font-weight="700" font-family="Arial,sans-serif">amazon</text><text x="24" y="30" text-anchor="middle" fill="#FF9900" font-size="7" font-weight="700" font-family="Arial,sans-serif">pay</text><path d="M13 36 Q24 41 35 36" fill="none" stroke="#FF9900" stroke-width="2.5" stroke-linecap="round"/><polygon points="33.5,34 35.5,36 33.5,38" fill="#FF9900"/></svg></span>
+            <div class="app-info"><div class="app-name">Amazon Pay</div><div class="app-tag">Tap to open</div></div>
+          </button>
+          <button class="upi-deeplink-btn" onclick="deepLinkUPI('other')">
+            <span class="app-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#0E3F6E"/><rect x="10" y="11" width="28" height="4.5" rx="2" fill="#FF6B00"/><rect x="10" y="21.5" width="28" height="13" rx="2" fill="#fff"/><text x="24" y="31.5" text-anchor="middle" fill="#0E3F6E" font-size="8" font-weight="900" font-family="Arial,sans-serif">UPI</text><rect x="10" y="36.5" width="28" height="4.5" rx="2" fill="#138808"/></svg></span>
+            <div class="app-info"><div class="app-name">Other App</div><div class="app-tag">Any UPI app</div></div>
+          </button>
+        </div>
+        <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text2);text-align:center">
+          📋 UPI ID: <strong style="color:var(--text);font-family:monospace" id="modalMerchantUPI">7620827589-4@ybl</strong>
+          <button onclick="copyUPIId()" style="margin-left:8px;padding:3px 10px;border-radius:50px;background:rgba(232,82,26,0.1);border:none;color:var(--accent);font-size:0.72rem;font-weight:600;cursor:pointer">Copy</button>
+        </div>
+      </div>
+
+      <!-- TAB: UPI ID Entry -->
+      <div class="pay-tab-content" id="tabId">
+        <div style="margin-bottom:12px">
+          <div class="form-field" style="margin:0">
+            <input type="text" id="modalUPIInput" placeholder=" " oninput="resetModalVerify()">
+            <label>Enter your UPI ID</label>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:6px">e.g. rahul@upi, 9876543210@paytm, name@okicici</div>
+        </div>
+        <button class="btn-verify-upi" style="width:100%;margin-bottom:12px" onclick="verifyModalUPI()">Verify UPI ID →</button>
+        <div class="upi-id-verified" id="modalUPIVerified">✅ UPI ID verified — you'll receive a payment request</div>
+        <div id="modalUPIError" style="display:none;color:var(--red);font-size:0.82rem;margin-bottom:12px">❌ Invalid UPI ID. Please check and retry.</div>
+      </div>
+
+      <!-- Payment Status Tracker -->
+      <div id="payStatusSection" style="display:none">
+        <div class="status-steps">
+          <div class="status-step" id="step1"><div class="step-icon">📤</div><div>Payment request sent</div></div>
+          <div class="status-step" id="step2"><div class="step-icon">⏳</div><div>Awaiting confirmation</div></div>
+          <div class="status-step" id="step3"><div class="step-icon">🏦</div><div>Bank processing</div></div>
+          <div class="status-step" id="step4"><div class="step-icon">✅</div><div>Payment verified</div></div>
+        </div>
+      </div>
+
+      <!-- Success result -->
+      <div class="pay-result" id="paySuccessResult">
+        <div class="pay-result-icon">🎉</div>
+        <h3 style="color:var(--green)">Payment Successful!</h3>
+        <p>Your payment has been received and ticket is confirmed.</p>
+        <div class="txn-id" id="paySuccessTxnId"></div>
+      </div>
+
+      <!-- Failed result -->
+      <div class="pay-result" id="payFailResult">
+        <div class="pay-result-icon">❌</div>
+        <h3 style="color:var(--red)">Payment Failed</h3>
+        <p>Transaction could not be completed. Please try again.</p>
+        <button class="btn-verify-upi" style="margin-top:12px;width:100%" onclick="retryPayment()">Retry Payment</button>
+      </div>
+
+      <!-- UTR Verification — required before confirming booking -->
+      <div id="payActionBtns">
+        <div style="background:rgba(232,82,26,0.06);border:1.5px solid rgba(232,82,26,0.2);border-radius:var(--radius);padding:16px;margin-bottom:10px">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+            🧾 Enter UTR / Transaction Reference
+          </div>
+          <div style="font-size:0.75rem;color:var(--text2);margin-bottom:10px;line-height:1.5">
+            After paying, open your UPI app → check the transaction → copy the <strong>12-digit UTR number</strong> and paste it below to confirm your booking.
+          </div>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <input type="text" id="utrInput" maxlength="22"
+              placeholder="e.g. 503212345678"
+              oninput="onUTRInput(this)"
+              style="flex:1;padding:11px 14px;border-radius:var(--radius-sm);background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;letter-spacing:1px;transition:border-color 0.2s"
+              onfocus="this.style.borderColor='var(--accent)'"
+              onblur="this.style.borderColor='var(--border)'">
+            <button class="btn-verify-upi" id="utrVerifyBtn" onclick="verifyAndConfirmPayment()" disabled
+              style="opacity:0.45;cursor:not-allowed;transition:opacity 0.2s">
+              Confirm →
+            </button>
+          </div>
+          <div id="utrError" style="display:none;color:var(--red);font-size:0.78rem;margin-top:7px">
+            ❌ Invalid UTR. It must be 12 digits (numbers only).
+          </div>
+          <div id="utrHint" style="font-size:0.7rem;color:var(--text3);margin-top:7px">
+            Where to find UTR: GPay → Transaction → Details · PhonePe → History · Paytm → Passbook
+          </div>
+        </div>
+        <button onclick="closeUPIModal()" style="width:100%;padding:10px;border-radius:var(--radius-sm);background:none;border:1.5px solid var(--border);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='none'">
+          Cancel & Go Back
+        </button>
+      </div>
+
+      <!-- Security badges -->
+      <div class="security-badges">
+        <div class="sec-badge">🔒 256-bit SSL</div>
+        <div class="sec-badge">✅ NPCI Certified</div>
+        <div class="sec-badge">🏛️ RBI Compliant</div>
+        <div class="sec-badge">🛡️ PCI-DSS</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WALLET MODAL ===== -->
+<div class="wallet-modal-overlay" id="walletOverlay" onclick="if(event.target===this)closeWallet()">
+  <div class="wallet-modal">
+    <div class="wallet-card-hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="wallet-balance-label">BusGo Wallet</div>
+          <div class="wallet-balance-amount">₹<span id="walletDisplay">0</span></div>
+          <div class="wallet-user-name" id="walletUserName">—</div>
+        </div>
+        <button onclick="closeWallet()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem">✕</button>
+      </div>
+      <div class="wallet-card-actions">
+        <div class="wallet-action-btn" onclick="switchWalletTab('add')">➕ Add Money</div>
+        <div class="wallet-action-btn" onclick="switchWalletTab('txns')">📋 Transactions</div>
+        <div class="wallet-action-btn" onclick="showToast('📜 Statement sent to your email!')">📜 Statement</div>
+      </div>
+    </div>
+    <div class="wallet-body">
+      <div id="walletTabAdd">
+        <h4 style="margin-bottom:12px;font-size:0.9rem">Add Money</h4>
+        <div class="quick-amounts">
+          <button class="quick-amount-btn" onclick="setAddAmt(100)">₹100</button>
+          <button class="quick-amount-btn" onclick="setAddAmt(250)">₹250</button>
+          <button class="quick-amount-btn" onclick="setAddAmt(500)">₹500</button>
+          <button class="quick-amount-btn" onclick="setAddAmt(1000)">₹1000</button>
+          <button class="quick-amount-btn" onclick="setAddAmt(2000)">₹2000</button>
+        </div>
+        <div class="add-money-form">
+          <input type="number" id="addMoneyInput" placeholder="Enter amount" min="1" max="50000">
+          <button class="btn-verify-upi" onclick="addWalletMoney()" style="background:var(--green);border-color:var(--green)">Add →</button>
+        </div>
+        <p style="font-size:0.72rem;color:var(--text3)">Secure payment via UPI / Card. Instant credit.</p>
+      </div>
+      <div id="walletTabTxns">
+        <h4 style="margin-bottom:12px;font-size:0.9rem">Recent Transactions</h4>
+        <div id="walletTxnList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REWARDS MODAL ===== -->
+<div class="rewards-overlay" id="rewardsOverlay" onclick="if(event.target===this)closeRewards()">
+  <div class="rewards-modal">
+    <div class="rewards-hero">
+      <button onclick="closeRewards()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem">✕</button>
+      <div class="tier-badge-large bronze" id="rewardsTierBadge">🥉 Bronze Member</div>
+      <div class="points-big" id="rewardsPoints">0</div>
+      <div class="points-label">BusGo Points</div>
+      <div class="tier-progress-wrap">
+        <div class="tier-progress-bar">
+          <div class="tier-progress-fill" id="rewardsTierBar" style="width:0%"></div>
+        </div>
+        <div class="tier-next-label" id="rewardsTierNext">Earn 500 more points to reach Silver</div>
+      </div>
+    </div>
+    <div class="rewards-body">
+      <div class="rewards-tabs">
+        <button class="rewards-tab active" onclick="switchRewardsTab('perks',this)">My Perks</button>
+        <button class="rewards-tab" onclick="switchRewardsTab('earn',this)">How to Earn</button>
+        <button class="rewards-tab" onclick="switchRewardsTab('redeem',this)">Redeem</button>
+      </div>
+      <div id="rewardsTabPerks"></div>
+      <div id="rewardsTabEarn" style="display:none"></div>
+      <div id="rewardsTabRedeem" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BUS COMPARISON OVERLAY ===== -->
+<div class="compare-overlay" id="compareOverlay" onclick="if(event.target===this)closeCompare()">
+  <div class="compare-modal">
+    <div class="compare-head">
+      <h3>⚖️ Bus Comparison</h3>
+      <button onclick="closeCompare()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text2)">✕</button>
+    </div>
+    <div style="padding:0 0 16px">
+      <div id="compareTableWrap" style="overflow-x:auto;padding:0 24px"></div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <button onclick="clearComparison()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.85rem;font-family:'DM Sans',sans-serif;font-weight:600">🗑 Clear</button>
+      <button class="btn-search" style="padding:10px 24px" onclick="closeCompare()">Book Best Option →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COMPARE FLOATING ACTION ===== -->
+<button class="compare-fab" id="compareFab" onclick="openCompare()">
+  <span>⚖️ Compare</span>
+  <span class="compare-count" id="compareCount">0</span>
+</button>
+
+<!-- ===== SCROLL TO TOP ===== -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ===== LIVE CHAT WIDGET ===== -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()">
+  💬<span class="chat-notif-dot"></span>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="chat-agent-avatar">🎧</div>
+    <div class="chat-agent-info">
+      <div class="cname">BusGo Support</div>
+      <div class="cstatus">Online · Avg reply &lt;2 min</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-quick-replies" id="chatQuickReplies">
+    <button class="chat-quick-btn" onclick="sendQuickMsg('Track my bus')">🚌 Track bus</button>
+    <button class="chat-quick-btn" onclick="sendQuickMsg('Cancel booking')">❌ Cancel booking</button>
+    <button class="chat-quick-btn" onclick="sendQuickMsg('Refund status')">💸 Refund</button>
+    <button class="chat-quick-btn" onclick="sendQuickMsg('Payment issue')">💳 Payment help</button>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" type="text" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendChatMsg()">
+    <button class="chat-send" onclick="sendChatMsg()">➤</button>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer" id="site-footer">
+  <div class="footer-container">
+    <div class="footer-col brand-col">
+      <div class="footer-logo">🚌 <span>Bus</span>Go</div>
+      <p>India's most trusted bus booking platform. Travel comfortably, book confidently.</p>
+      <div style="margin-top:14px;font-size:0.78rem;color:rgba(255,255,255,0.5)">
+        <div>📍 5th Floor, Tech Park, Nagpur – 440024</div>
+        <div style="margin-top:4px">📞 1800-123-4567 · help@busgo.in</div>
+      </div>
+      <div class="footer-socials">
+        <a class="social-btn" title="Twitter" onclick="showToast('𝕏 Follow @BusGoIndia')">𝕏</a>
+        <a class="social-btn" title="Facebook" onclick="showToast('👍 Like BusGo on Facebook')">f</a>
+        <a class="social-btn" title="Instagram" onclick="showToast('📸 @busgo.india')">📸</a>
+        <a class="social-btn" title="LinkedIn" onclick="showToast('🔗 BusGo on LinkedIn')">in</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a onclick="goHome()">🔍 Search Buses</a></li>
+        <li><a onclick="openPage('bookings')">🎫 My Bookings</a></li>
+        <li><a onclick="openPage('offers')">🏷️ Offers & Deals</a></li>
+        <li><a onclick="openPage('track')">📍 Track Bus</a></li>
+        <li><a onclick="openPage('priceAlerts')">🔔 Price Alerts</a></li>
+        <li><a onclick="openPage('wishlist')">❤️ Saved Routes</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Features</h4>
+      <ul>
+        <li><a onclick="openWallet()">💚 BusGo Wallet</a></li>
+        <li><a onclick="openRewards()">⭐ Loyalty Rewards</a></li>
+        <li><a onclick="openPage('referral')">🎁 Refer & Earn</a></li>
+        <li><a onclick="toggleChat()">💬 Live Chat Support</a></li>
+        <li><a onclick="openPage('transactions')">💸 Payment History</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a onclick="openPage('about')">🏢 About Us</a></li>
+        <li><a onclick="openPage('blog')">📝 Blog</a></li>
+        <li><a onclick="openPage('careers')">💼 Careers</a></li>
+        <li><a onclick="openPage('press')">📰 Press Room</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a onclick="openPage('help')">❓ Help Center</a></li>
+        <li><a onclick="openPage('contact')">📞 Contact Us</a></li>
+        <li><a onclick="openPage('refund')">↩️ Refund Policy</a></li>
+        <li><a onclick="openPage('terms')">📋 Terms & Privacy</a></li>
+      </ul>
+      <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.06);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.1)">
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">🔒 Secured by</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:0.65rem;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px">256-bit SSL</span>
+          <span style="font-size:0.65rem;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px">PCI-DSS</span>
+          <span style="font-size:0.65rem;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px">NPCI</span>
+          <span style="font-size:0.65rem;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px">RBI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 BusGo Technologies Pvt. Ltd. · CIN: U63090MH2025PTC308410 · All rights reserved.</div>
+    <div class="footer-links">
+      <a onclick="openPage('terms')">Privacy Policy</a>
+      <a onclick="openPage('terms')">Terms of Service</a>
+      <a onclick="openPage('terms')">Cookie Policy</a>
+      <a onclick="openPage('refund')">Cancellation Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ===============================
+     LOGIN / SIGNUP MODAL
+     =============================== -->
+<div class="auth-overlay" id="authOverlay" onclick="handleAuthOverlayClick(event)">
+  <div class="auth-modal" id="authModal">
+    <div class="auth-modal-header">
+      <button class="close-btn" onclick="closeAuth()">✕</button>
+      <div class="auth-logo">🚌 <span>Bus</span>Go</div>
+      <div class="auth-tagline">India's #1 Bus Booking Platform</div>
+      <div class="auth-tabs" id="authTabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-body" id="loginForm">
+      <div class="auth-field" id="af-lemail">
+        <label>Email Address</label>
+        <span class="fi">📧</span>
+        <input type="email" id="lEmail" placeholder="yourname@email.com">
+        <div class="err">Please enter a valid email</div>
+      </div>
+      <div class="auth-field" id="af-lpassword">
+        <label>Password</label>
+        <span class="fi">🔒</span>
+        <input type="password" id="lPassword" placeholder="Enter your password" autocomplete="current-password">
+        <button class="toggle-pw" onclick="togglePw('lPassword',this)" type="button">👁</button>
+        <div class="err">Password must be at least 6 characters</div>
+      </div>
+      <a class="forgot-link" onclick="showForgot()">Forgot password?</a>
+      <button class="btn-auth-submit" onclick="doLogin()">Login to BusGo →</button>
+      <div class="auth-divider"><span></span><p>or continue with</p><span></span></div>
+      <button class="btn-social" onclick="doSocialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-note">Don't have an account? <a onclick="switchAuthTab('signup')">Sign up free</a></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="auth-body" id="signupForm" style="display:none">
+      <div class="auth-field" id="af-sname">
+        <label>Full Name</label>
+        <span class="fi">👤</span>
+        <input type="text" id="sName" placeholder="Rahul Sharma">
+        <div class="err">Please enter your full name</div>
+      </div>
+      <div class="auth-field" id="af-semail">
+        <label>Email Address</label>
+        <span class="fi">📧</span>
+        <input type="email" id="sEmail" placeholder="yourname@email.com">
+        <div class="err">Please enter a valid email</div>
+      </div>
+      <div class="auth-field" id="af-sphone">
+        <label>Phone Number</label>
+        <span class="fi">📱</span>
+        <input type="tel" id="sPhone" placeholder="10-digit mobile number">
+        <div class="err">Enter valid 10-digit number</div>
+      </div>
+      <div class="auth-field" id="af-spassword">
+        <label>Password</label>
+        <span class="fi">🔒</span>
+        <input type="password" id="sPassword" placeholder="Min. 6 characters">
+        <button class="toggle-pw" onclick="togglePw('sPassword',this)" type="button">👁</button>
+        <div class="err">Password must be at least 6 characters</div>
+      </div>
+      <button class="btn-auth-submit" onclick="doSignup()">Create Account →</button>
+      <div class="auth-divider"><span></span><p>or continue with</p><span></span></div>
+      <button class="btn-social" onclick="doSocialLogin('Google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-note">Already have an account? <a onclick="switchAuthTab('login')">Login here</a></div>
+      <div class="auth-note" style="margin-top:8px">By signing up you agree to our <a onclick="openPage('terms');closeAuth()">Terms</a> &amp; <a onclick="openPage('terms');closeAuth()">Privacy Policy</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===============================
+     PAGE DRAWER (all content pages)
+     =============================== -->
+<div class="page-overlay" id="pageOverlay" onclick="handlePageOverlayClick(event)">
+  <div class="page-drawer" id="pageDrawer">
+    <div class="page-drawer-header" id="pageDrawerHeader">
+      <div>
+        <h2 id="pageTitle">Page</h2>
+        <p id="pageSubtitle"></p>
+      </div>
+      <button class="close-drawer" onclick="closePage()">✕</button>
+    </div>
+    <div class="page-drawer-body" id="pageBody"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<!-- BusGo Backend API Integration — loads AFTER app.js so it properly overrides in-memory functions -->
+<script src="api.js"></script>
+<!-- Final integration patches: connects showConfirmation, refunds, wallet to MongoDB -->
+<script src="integration.js"></script>
+</body>
+</html>
