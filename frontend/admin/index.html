@@ -407,7 +407,7 @@ tbody td:first-child{color:var(--text)}
 /* ════════════════════════════════════════════════════════════
    BusGo Admin Panel — JS
 ════════════════════════════════════════════════════════════ */
-const API = 'http://localhost:5000/api';
+const API = 'https://busgo-piik.onrender.com/api';
 let token    = localStorage.getItem('busgo_admin_token') || null;
 let me       = null;
 let curPage  = 'dashboard';
@@ -940,7 +940,7 @@ function renderSettings() {
     <div class="set-section fade-in">
       <div class="set-hdr">🔗 API Health</div>
       <div class="set-body">
-        <div class="set-row"><div class="set-info"><h4>Backend Server</h4><p>http://localhost:5000</p></div><button class="btn btn-ghost btn-sm" onclick="checkHealth()">Check</button></div>
+        <div class="set-row"><div class="set-info"><h4>Backend Server</h4><p>https://busgo-piik.onrender.com</p></div><button class="btn btn-ghost btn-sm" onclick="checkHealth()">Check</button></div>
         <div id="healthResult" style="margin-top:10px;font-size:.82rem;color:var(--text3)"></div>
       </div>
     </div>
