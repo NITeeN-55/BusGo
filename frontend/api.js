@@ -5,6 +5,14 @@
 
 const API_BASE = 'https://busgo-piik.onrender.com/api';
 
+// ── Render free-tier wake-up ping ────────────────────────────
+// Render spins down after inactivity; this silent ping fires on
+// page load so the server is warm before the user needs it.
+(function pingBackend() {
+  fetch(`${API_BASE}/health`, { method: 'GET' })
+    .then(r => r.ok && console.log('✅ BusGo backend is awake'))
+    .catch(() => console.warn('⚠️ Backend warming up — first request may be slow'));
+})();
 
 // ── Token helpers ────────────────────────────────────────────
 const Token = {
@@ -15,7 +23,8 @@ const Token = {
 };
 
 // ── Base fetch wrapper ───────────────────────────────────────
-async function apiFetch(endpoint, options = {}) {
+// Retries once after 3 s on network errors (handles Render cold starts)
+async function apiFetch(endpoint, options = {}, _retry = true) {
   const headers = { 'Content-Type': 'application/json' };
   const token = Token.get();
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -28,7 +37,13 @@ async function apiFetch(endpoint, options = {}) {
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
   } catch {
-    throw new Error('Cannot reach backend server');
+    // Network-level failure (CORS, server down, no internet)
+    if (_retry) {
+      // Wait 3 s and try once more — Render free tier cold start can take time
+      await new Promise(res => setTimeout(res, 3000));
+      return apiFetch(endpoint, options, false);
+    }
+    throw new Error('Cannot reach the server. Please check your internet connection or try again shortly.');
   }
 
   const data = await response.json();
